@@ -123,7 +123,6 @@ function totalPorCiudad (ventas){
 
 //unidadesPorProducto
 function unidadesPorProducto (ventas){
-    let totalUnidades = 0;
 
     const UnidadesProducto = ventas.reduce((acumulador,venta) => {
         const producto = normalizar(venta.producto)
@@ -133,14 +132,11 @@ function unidadesPorProducto (ventas){
         }
 
         acumulador[producto] += venta.cantidad
-        totalUnidades += venta.cantidad
 
         return acumulador
     }, {})
 
-    return {
-        totalUnidades, totalUnidades
-    }
+    return UnidadesProducto
 }
 
 //topProductosPorValor
@@ -163,4 +159,48 @@ function topProductosPorValor (ventas, k){
     
 }
 
-module.exports = {valorVenta, totalVendido, unidadesVendidas, ventaMayor, ticketPromedio, ventasPorCiudad, normalizar,totalVendidoM, unidadesVendidasM, ventasPorCiudadM, totalPorCiudad, unidadesPorProducto, topProductosPorValor}
+//funcion para transformar los numeros de la tabla ventasPorCiudad en region colombia y separe con .
+//y que me agrege una propiedad (clave) adelante de cada ciudad y cada valor
+function valoresCiudadFormateado (ventas) {
+
+    //guardo el objeto que me da totalPorCiudad con todas las ciudades y sus valores
+    const objetoCiudades = totalPorCiudad(ventas)
+
+    //el objeto con todas las ciudades, lo convierto en mini objetos clave par y valor con obj.entries -- con el .map paso posicion por posicion y creo un nuevo arreglo con la cualidades que pida mi funcion
+    //mi funcion le doy el parametro actual
+    const valorFormateado = Object.entries(objetoCiudades).map((actual) => {
+
+        //retorna un objeto por cada vuelta con la propiedad ciudad para la posicion[0] de mis mini objetos.
+        //y con la propiedad totalvendido para la posicion[1] de mis mini objetos y le agrega el locale para separar los numeros segun la region (colombia)
+        return {ciudad : actual[0], totalvendido : actual[1].toLocaleString("es-CO")}})
+
+        //fuera de la arrow function me retorna valorFormateado, a mi funcion grande valoresCiudadFormateado 
+        return valorFormateado
+    }
+
+    //funcion para transformar los numeros de la tabla ventas topProductosPorValor en region colombia y separe con .
+    //y que me agrege una propiedad (clave) adelante de cada producto y cada valor
+    function valoresProductosFormateados(ventas,k){
+
+        const objetoProductosValor = topProductosPorValor(ventas,k)
+
+        const valorFormateado = objetoProductosValor.map((actual) => {
+            return {productos : actual[0], totalvendido : actual[1].toLocaleString("es-CO")} })
+            return valorFormateado
+    }
+
+    //VentasDelDia
+    function ventasDelDia (ventas, fecha) {
+       const fechasIguales = ventas.filter((actual) => {
+            if(fecha === actual.fecha){
+                return actual
+            }
+        })
+        return fechasIguales
+    }
+
+
+
+    
+
+module.exports = {valorVenta, totalVendido, unidadesVendidas, ventaMayor, ticketPromedio, ventasPorCiudad, normalizar,totalVendidoM, unidadesVendidasM, ventasPorCiudadM, totalPorCiudad, unidadesPorProducto, topProductosPorValor, valoresCiudadFormateado, valoresProductosFormateados, ventasDelDia}

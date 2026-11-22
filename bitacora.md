@@ -361,3 +361,57 @@ Resultado después:
 Conclusión: el orden de las ventas originales se conservó.
 
 Observación: Object.entries() crea un arreglo nuevo con los productos agrupados. sort() modifica ese nuevo arreglo, no ventas. Después slice() devuelve otro arreglo con los primeros k productos sin modificar el arreglo del que se extrajo.
+
+## Registro de depuración - MiniReto 4
+
+### Error 1: Ciudades duplicadas
+
+- Síntoma: Bogotá aparecía dos veces en el reporte porque estaba escrita de diferentes maneras.
+- Entrada que lo produce: dos propiedades con nombres "Bogotá" y "BOGOTÁ", con valores de 10000 y 20000.
+- Hipótesis: JavaScript interpreta las ciudades como claves diferentes porque sus nombres no coinciden exactamente.
+- Prueba realizada: creé un objeto llamado ciudadesPruebas con las dos ciudades sin normalizar. Al imprimirlo aparecieron dos propiedades distintas.
+- Causa: los nombres de las propiedades distinguen mayúsculas, minúsculas y espacios.
+- Corrección: utilicé la función normalizar() para convertir los nombres a minúsculas, quitar espacios y eliminar tildes. Después sumé los 20000 a la propiedad que ya tenía 10000.
+
+Resultado sin normalización:
+
+```js
+{ 'Bogotá': 10000, 'BOGOTÁ': 20000 }
+```
+
+Resultado con normalización:
+
+```js
+{ bogota: 30000 }
+```
+
+Conclusión: al normalizar las ciudades antes de utilizarlas como claves, las ventas de una misma ciudad se acumulan en una sola propiedad.
+
+### Error 2: NaN en ticketPromedio
+
+- Síntoma: el ticket promedio mostraba NaN cuando se consultaba un día sin ventas.
+- Entrada que lo produce: una fecha sin registros, como "2026-09-10".
+- Hipótesis: cuando no existen ventas, el total vendido y el contador de ventas válidas quedan en 0. Al dividir 0 entre 0 se obtiene NaN.
+- Prueba realizada: creé dos variables llamadas totalDia y cantidadVentas, ambas en 0. Después dividí sus valores y comprobé que el resultado era NaN.
+- Causa: realizar una división sin comprobar primero si existen ventas válidas.
+- Corrección: la función ticketPromedio() comprueba si el contador de ventas válidas es igual a 0 antes de dividir. Si no hay ventas válidas, devuelve 0.
+
+Resultado de la prueba sin validación:
+
+```js
+0 / 0 // NaN
+```
+
+Resultado utilizando nuestra función:
+
+```js
+ticketPromedio([]) // 0
+```
+
+Conclusión: la validación evita dividir entre cero y permite consultar días sin ventas sin obtener NaN.
+
+### Resultado general de la depuración
+
+- Error 1: reproducido y comprobada la corrección mediante normalizar().
+- Error 2: reproducido y comprobada la corrección mediante ticketPromedio().
+- Las pruebas demostraron que nuestra implementación evita ambos problemas reportados por la gerente.
