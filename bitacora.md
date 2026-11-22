@@ -1,8 +1,8 @@
-# DIA 1 
-# MINI -RETO 1
 # Bitácora - Café Origen analítica
 
-## Diccionario de datos
+## MiniReto 1 - Conociendo los datos
+
+### Diccionario de datos
 
 El array ventas contiene 12 objetos y cada objeto tiene 7 propiedades.
 
@@ -34,40 +34,44 @@ El array ventas contiene 12 objetos y cada objeto tiene 7 propiedades.
   Tipo: Number
   Significado: Precio por unidad del producto.
 
-## Observaciones
+### Observaciones
 
 - Number: son valores numéricos sin comillas.
 - String: son valores de texto entre comillas.
 - fecha es String porque está guardada como texto.
 - (index) no es una propiedad, es la posición de cada objeto en el array. La posición empieza en 0, por eso ventas[0] es la venta con id 1.
 
-## Casos borde detectados
+### Casos borde detectados
 
-### 1. Clientes repetidos
+#### 1. Clientes repetidos
 
 - Problema: C01 aparece 3 veces, y C02 y C03 aparecen 2 veces cada uno.
 - Decisión: se permiten varias compras por cliente. El ticket promedio se calcula por compra (por registro), no por cliente, así que no se agrupa por la propiedad cliente.
 
-### 2. Cantidad igual a cero
+#### 2. Cantidad igual a cero
 
 - Problema: la venta con id 8 tiene cantidad 0.
 - Decisión: no se cuenta como venta válida. Su valor es 0, así que no cambia el total vendido ni las unidades, pero no entra al conteo del ticket promedio. Si se contara, el promedio se dividiría entre 12 en vez de 11 y saldría más bajo por una compra que no ocurrió.
 
-### 3. Ciudades escritas diferente
+#### 3. Ciudades escritas diferente
 
 - Problema: la venta con id 5 tiene la ciudad "medellín " (minúscula y con un espacio al final), mientras las demás dicen "Medellín".
 - Decisión: antes de comparar se normalizan las dos ciudades (la que llega por parámetro y la de cada venta) con la función normalizar. Los datos originales de datos.js no se modifican.
 
-## Plan en pseudocódigo
+---
 
-### valorVenta
+## MiniReto 2 - Los números del día: recorrer, filtrar y acumular
+
+### Plan en pseudocódigo
+
+#### valorVenta
 
 - Recibe: una venta (un objeto)
 - Devuelve: cantidad multiplicada por precio
 - Ciclo: ninguno
 - Si la cantidad es 0: devuelve 0
 
-### totalVendido
+#### totalVendido
 
 - Recorro: cada venta del arreglo
 - Condición: ninguna (las ventas con cantidad 0 aportan 0)
@@ -75,7 +79,7 @@ El array ventas contiene 12 objetos y cada objeto tiene 7 propiedades.
 - Inicio en: 0
 - Si el arreglo está vacío: devuelve 0
 
-### unidadesVendidas
+#### unidadesVendidas
 
 - Recorro: cada venta del arreglo
 - Condición: ninguna (las ventas con cantidad 0 suman 0 unidades)
@@ -83,7 +87,7 @@ El array ventas contiene 12 objetos y cada objeto tiene 7 propiedades.
 - Inicio en: 0
 - Si el arreglo está vacío: devuelve 0
 
-### ventaMayor
+#### ventaMayor
 
 - Recorro: cada venta del arreglo
 - Condición: todavía no hay venta guardada, o el valorVenta de la venta actual es mayor que el de la venta guardada
@@ -92,7 +96,7 @@ El array ventas contiene 12 objetos y cada objeto tiene 7 propiedades.
 - Si hay dos ventas con el mismo valor: se queda la primera, porque la comparación es "mayor que" y no "mayor o igual"
 - Si el arreglo está vacío: devuelve null
 
-### ticketPromedio
+#### ticketPromedio
 
 - Recorro: cada venta del arreglo
 - Condición: la cantidad es mayor que 0 (venta válida)
@@ -102,14 +106,14 @@ El array ventas contiene 12 objetos y cada objeto tiene 7 propiedades.
 - Después del ciclo: si el contador es 0, devuelve 0 y no divide
 - Al final: total dividido entre contador
 
-### normalizar
+#### normalizar
 
 - Recibe: un texto
 - Devuelve: el mismo texto sin espacios en los extremos, en minúsculas y sin tildes
 - Pasos: trim() quita los espacios de los extremos, toLowerCase() pasa a minúsculas, normalize("NFD") separa cada letra de su tilde, y replace() borra las marcas de tilde
 - Efecto secundario: la ñ queda como n
 
-### ventasPorCiudad
+#### ventasPorCiudad
 
 - Recibe: el arreglo de ventas y una ciudad
 - Recorro: cada venta del arreglo
@@ -119,7 +123,7 @@ El array ventas contiene 12 objetos y cada objeto tiene 7 propiedades.
 - Si el arreglo está vacío o ninguna venta coincide: devuelve 0
 - Observación: como normalizar también quita tildes, "Medellin" sin tilde sí coincide con "Medellín"
 
-## Decisiones con arreglo vacío
+### Decisiones con arreglo vacío
 
 - totalVendido([]): devuelve 0. El ciclo no da vueltas y se queda el valor inicial del acumulador.
 - unidadesVendidas([]): devuelve 0, por la misma razón.
@@ -128,7 +132,7 @@ El array ventas contiene 12 objetos y cada objeto tiene 7 propiedades.
 - ventasPorCiudad([], ciudad): devuelve 0. No hay ventas que sumar.
 - valorVenta: recibe una sola venta, no un arreglo, así que el caso del arreglo vacío no aplica. Se prueba con una venta normal y con la venta de cantidad 0.
 
-## Pruebas con tres entradas
+### Pruebas con tres entradas
 
 Entradas usadas:
 
@@ -136,7 +140,7 @@ Entradas usadas:
 - Un solo elemento: [ventas[5]], que es la venta con id 6 (Bogotá, cantidad 2, precio 26000, valor 52000)
 - Arreglo vacío: []
 
-### Resultados
+#### Resultados
 
 | Función | Arreglo completo | Un solo elemento | Arreglo vacío |
 |---|---|---|---|
@@ -145,14 +149,14 @@ Entradas usadas:
 | ventaMayor | venta con id 10 | venta con id 6 | null |
 | ticketPromedio | 89545.45 | 52000 | 0 |
 
-### valorVenta (recibe una venta)
+#### valorVenta (recibe una venta)
 
 | Llamada | Resultado |
 |---|---|
 | valorVenta(ventas[0]) | 84000 |
 | valorVenta(ventas[7]) | 0 |
 
-### ventasPorCiudad (recibe arreglo y ciudad)
+#### ventasPorCiudad (recibe arreglo y ciudad)
 
 | Llamada | Resultado |
 |---|---|
@@ -163,23 +167,23 @@ Entradas usadas:
 | ventasPorCiudad(ventas, "Barranquilla") | 0 |
 | ventasPorCiudad(ventas, "Medellin") | 356000 |
 
-### Casos adicionales de ticketPromedio
+#### Casos adicionales de ticketPromedio
 
 | Llamada | Resultado | Qué comprueba |
 |---|---|---|
 | ticketPromedio([ventas[7]]) | 0 | Solo hay una venta y tiene cantidad 0, no hay ventas válidas |
 | ticketPromedio([ventas[7], ventas[8]]) | 90000 | La venta con cantidad 0 llega primero y aun así se calcula la válida |
 
-### Qué se observó
+#### Qué se observó
 
 - Con el arreglo vacío el ciclo no da ninguna vuelta, por eso las funciones que acumulan devuelven el 0 con el que empiezan.
 - ventaMayor devuelve null con el arreglo vacío porque guarda una venta completa, y no hay ninguna.
 - ticketPromedio necesita comprobar el contador después del ciclo y antes de dividir. Si se comprobara dentro del ciclo, una venta con cantidad 0 al inicio cortaría la función antes de revisar las válidas.
 - Con un solo elemento, ventaMayor devuelve esa misma venta y los promedios dan el valor de esa venta.
 
-## Verificación a mano (trazas)
+### Verificación a mano (trazas)
 
-### Traza 1: totalVendido(ventas)
+#### Traza 1: totalVendido(ventas)
 
 Valor inicial: total = 0. No hay condición, todas las ventas se suman.
 
@@ -205,7 +209,7 @@ Resultado de la traza: 985000.
 
 Resultado del programa: 985000. Coincide con la traza.
 
-### Traza 2: ventasPorCiudad(ventas, "Medellín")
+#### Traza 2: ventasPorCiudad(ventas, "Medellín")
 
 La ciudad recibida, normalizada, queda "medellin". Valor inicial: totalciudad = 0.
 
@@ -229,7 +233,9 @@ Resultado de la traza: 356000. La venta con id 5 ("medellín ") sí se suma grac
 
 Resultado del programa: 356000. Coincide con la traza.
 
-## MiniReto 3 - Métodos de arreglo, agrupaciones y ranking
+---
+
+## MiniReto 3 - Del ciclo al método: rankings y agrupaciones
 
 ### totalVendidoM
 
