@@ -1,4 +1,7 @@
-//const Ventas = require ("./datos")
+//const {ventas} = require ("./datos")
+
+const { ventas } = require("./datos");
+
 
 //calcula el total de una venta (objeto)
 function valorVenta (venta){
@@ -28,14 +31,16 @@ function unidadesVendidas (ventas){
 
 //calcula la venta mayor
 function ventaMayor (ventas){
-    let costosa = null
+    let costosa = 0
+    let Posicion = null
 
     for (const venta of ventas){
-        if (costosa === null || valorVenta(venta) > valorVenta(costosa)){
-            costosa = venta
+        if (costosa === 0 || valorVenta(venta) > (costosa)){
+            costosa = valorVenta(venta)
+            Posicion = venta
         }
     }
-    return costosa
+    return {costosa,Posicion}
 }
 
 //calcula el ticket promedio
@@ -81,5 +86,81 @@ function normalizar(palabra){
      return palabra.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
 }
 
+//calcular con metodos totalVendidoM
+function totalVendidoM (ventas){
+    return ventas.reduce((acumulador, actual) => {
+        return acumulador += valorVenta(actual)
+     }, 0 )
+}
 
-module.exports = {valorVenta, totalVendido, unidadesVendidas, ventaMayor, ticketPromedio, ventasPorCiudad, normalizar}
+//unidadesVendidasM
+function unidadesVendidasM (ventas){
+    return ventas.reduce((acumulador, actual) => {
+       return acumulador += actual.cantidad
+    }, 0)
+}
+
+//ventasPorCiudadM
+function ventasPorCiudadM (ventas,ciudad){
+    return ventas
+    .filter((venta) => normalizar(venta.ciudad) === normalizar(ciudad))
+    .reduce((acumulador,actual) => acumulador += valorVenta(actual), 0)
+}
+
+//totalVentasPorCiudad
+function totalPorCiudad (ventas){
+    
+    const totales = ventas.reduce((acumulador,venta) => {
+        const ciudades = normalizar(venta.ciudad)
+        if( acumulador[ciudades] === undefined){
+            acumulador[ciudades] = 0
+        }
+        acumulador[ciudades] += valorVenta(venta)
+        return acumulador 
+    }, {})
+    return totales
+}
+
+//unidadesPorProducto
+function unidadesPorProducto (ventas){
+    let totalUnidades = 0;
+
+    const UnidadesProducto = ventas.reduce((acumulador,venta) => {
+        const producto = normalizar(venta.producto)
+
+        if(acumulador[producto] === undefined){
+            acumulador[producto] = 0
+        }
+
+        acumulador[producto] += venta.cantidad
+        totalUnidades += venta.cantidad
+
+        return acumulador
+    }, {})
+
+    return {
+        totalUnidades, totalUnidades
+    }
+}
+
+//topProductosPorValor
+function topProductosPorValor (ventas, k){
+    const valorProductos = ventas.reduce((acumulador,venta) => {
+        const producto = normalizar(venta.producto)
+        if(acumulador[producto] === undefined){
+            acumulador[producto] = 0;
+        }
+        acumulador[producto] += valorVenta(venta)
+        return acumulador
+    }, {})
+
+    const ordenarProductos = Object.entries((valorProductos))
+    ordenarProductos.sort((a,b) => {
+        return b[1] - a[1]
+    })
+   const productosOrdenados = ordenarProductos.slice(0,k)
+    return productosOrdenados
+    
+}
+
+module.exports = {valorVenta, totalVendido, unidadesVendidas, ventaMayor, ticketPromedio, ventasPorCiudad, normalizar,totalVendidoM, unidadesVendidasM, ventasPorCiudadM, totalPorCiudad, unidadesPorProducto, topProductosPorValor}

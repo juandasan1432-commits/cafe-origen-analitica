@@ -1,3 +1,5 @@
+# DIA 1 
+# MINI -RETO 1
 # Bitácora - Café Origen analítica
 
 ## Diccionario de datos
@@ -226,3 +228,130 @@ La ciudad recibida, normalizada, queda "medellin". Valor inicial: totalciudad = 
 Resultado de la traza: 356000. La venta con id 5 ("medellín ") sí se suma gracias a la normalización.
 
 Resultado del programa: 356000. Coincide con la traza.
+
+## MiniReto 3 - Métodos de arreglo, agrupaciones y ranking
+
+### totalVendidoM
+
+- ¿Qué recorro?: cada venta del arreglo usando reduce().
+- ¿Qué filtro?: ninguno, todas las ventas participan.
+- ¿Qué transformo?: cada venta en su valor total usando valorVenta(venta).
+- ¿Qué acumulo?: el dinero generado por todas las ventas.
+- ¿Cómo agrupo?: no agrupo, solamente sumo todos los valores en un acumulador que inicia en 0.
+- Resultado: 985000.
+
+### unidadesVendidasM
+
+- ¿Qué recorro?: cada venta del arreglo usando reduce().
+- ¿Qué filtro?: ninguno, las ventas con cantidad 0 también se recorren, pero suman 0.
+- ¿Qué transformo?: de cada venta obtengo su propiedad cantidad.
+- ¿Qué acumulo?: las unidades vendidas usando un acumulador que inicia en 0.
+- ¿Cómo agrupo?: no agrupo por producto ni ciudad, solamente calculo el total de unidades.
+- Resultado: 21 unidades.
+
+### ventasPorCiudadM
+
+- ¿Qué recorro?: el arreglo ventas usando filter() y después las ventas seleccionadas usando reduce().
+- ¿Qué filtro?: las ventas cuya ciudad normalizada coincide con la ciudad recibida por parámetro.
+- ¿Qué transformo?: normalizo los nombres de las ciudades para compararlos y utilizo valorVenta() para obtener el dinero de cada venta.
+- ¿Qué acumulo?: el dinero generado por las ventas que pertenecen a la ciudad solicitada.
+- ¿Cómo agrupo?: no construyo grupos, solamente selecciono las ventas de una ciudad y sumo sus valores.
+- Resultado con Medellín: 356000.
+
+### Verificación de funciones con ciclos y métodos
+
+Se creó verificar.js para comprobar que las funciones originales y las versiones con métodos devolvieran los mismos resultados.
+
+- totalVendido y totalVendidoM: OK.
+- unidadesVendidas y unidadesVendidasM: OK.
+- ventasPorCiudad y ventasPorCiudadM: OK.
+
+Decisión: utilizar los mismos datos y parámetros para las dos versiones de cada indicador. Los resultados se comparan con === y se muestra OK si coinciden o DIFERENTE si no coinciden.
+
+### totalPorCiudad
+
+- ¿Qué recorro?: todas las ventas utilizando reduce().
+- ¿Qué filtro?: ninguno, todas las ventas participan.
+- ¿Qué transformo?: el nombre de cada ciudad utilizando normalizar() y cada venta en su valor monetario usando valorVenta().
+- ¿Qué acumulo?: el dinero generado por las ventas de cada ciudad.
+- ¿Cómo agrupo?: utilizo un objeto como diccionario. Cada ciudad normalizada funciona como una clave y su valor contiene el dinero acumulado.
+- Inicio en: un objeto vacío {}.
+- Condición: si la ciudad todavía no existe en el acumulador, creo su propiedad y la inicializo en 0.
+- Si la ciudad ya existe: sumo el valor de la nueva venta sin reiniciar su total.
+
+Resultados:
+
+| Ciudad | Total vendido |
+|---|---:|
+| medellin | 356000 |
+| bogota | 276000 |
+| cali | 185000 |
+| pereira | 168000 |
+| **Total** | **985000** |
+
+Observación: el objeto devuelve exactamente cuatro ciudades y no aparecen grupos duplicados gracias a la normalización.
+
+### unidadesPorProducto
+
+- ¿Qué recorro?: todas las ventas utilizando reduce().
+- ¿Qué filtro?: ninguno, todas las ventas participan.
+- ¿Qué transformo?: normalizo el nombre de cada producto para utilizarlo como clave del objeto.
+- ¿Qué acumulo?: la cantidad de unidades vendidas de cada producto.
+- ¿Cómo agrupo?: utilizo un objeto como diccionario donde cada producto es una clave y las unidades acumuladas son su valor.
+- Inicio en: un objeto vacío {}.
+- Condición: si el producto todavía no existe, creo su propiedad y la inicializo en 0.
+- Si el producto ya existe: sumo la cantidad de la venta actual al total que tenía guardado.
+- Prueba adicional: también calculé el total general de unidades vendidas usando otro acumulador.
+
+Resultados:
+
+| Producto | Unidades |
+|---|---:|
+| origen huila 500 g | 7 |
+| origen narino 250 g | 6 |
+| prensa francesa | 2 |
+| origen sierra 500 g | 5 |
+| molino manual | 1 |
+| **Total** | **21** |
+
+### topProductosPorValor
+
+- ¿Qué recorro?: todas las ventas utilizando reduce() y posteriormente las parejas de productos para ordenarlas con sort().
+- ¿Qué filtro?: no excluyo ventas durante la agrupación. Al final selecciono solamente los primeros k productos usando slice().
+- ¿Qué transformo?: normalizo los nombres de los productos, calculo su valor monetario y convierto el objeto agrupado en un arreglo usando Object.entries().
+- ¿Qué acumulo?: el dinero generado por todas las ventas de cada producto.
+- ¿Cómo agrupo?: utilizo un objeto como diccionario, donde cada producto es una clave y su valor es el dinero acumulado.
+- Inicio en: un objeto vacío {}.
+- Condición: si el producto todavía no existe, creo su propiedad en 0; si existe, sigo sumando su valor.
+- Ordenamiento: utilizo sort() con una función de comparación que resta b[1] - a[1], para organizar los productos de mayor a menor valor.
+- Selección: slice(0, k) permite devolver únicamente los primeros k productos.
+
+Resultados de topProductosPorValor(ventas, 3):
+
+| Posición | Producto | Valor generado |
+|---|---|---:|
+| 1 | origen huila 500 g | 294000 |
+| 2 | origen sierra 500 g | 225000 |
+| 3 | prensa francesa | 190000 |
+
+### Verificación del orden original
+
+El reto exige que el arreglo ventas conserve su orden después de ejecutar topProductosPorValor().
+
+- Antes de ejecutar la función: creé una copia del arreglo usando [...ventas].
+- Utilicé map() para obtener los ID de las ventas originales.
+- Ejecuté topProductosPorValor(ventas, 3).
+- Después utilicé map() nuevamente para obtener los ID del arreglo ventas.
+- Comparé visualmente el orden de ambas listas.
+
+Resultado antes:
+
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+
+Resultado después:
+
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+
+Conclusión: el orden de las ventas originales se conservó.
+
+Observación: Object.entries() crea un arreglo nuevo con los productos agrupados. sort() modifica ese nuevo arreglo, no ventas. Después slice() devuelve otro arreglo con los primeros k productos sin modificar el arreglo del que se extrajo.
