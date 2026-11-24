@@ -1,195 +1,72 @@
-# Bitácora - Café Origen analítica
+# Bitácora — Café Origen Analítica
 
-## MiniReto 1 - Conociendo los datos
+## MiniReto 1 — Conociendo los datos
 
 ### Diccionario de datos
 
-El array ventas contiene 12 objetos y cada objeto tiene 7 propiedades.
+El arreglo `ventas` contiene **12 objetos**, cada uno con **7 propiedades**:
 
-- id:
-  Tipo: Number
-  Significado: Número que identifica cada venta.
+| Propiedad | Tipo | Significado |
+|---|---|---|
+| `id` | Number | Identificador de la venta. |
+| `fecha` | String | Fecha de la venta. |
+| `cliente` | String | Código del cliente. |
+| `producto` | String | Nombre del producto. |
+| `ciudad` | String | Ciudad donde se registró la venta. |
+| `cantidad` | Number | Unidades vendidas. |
+| `precio` | Number | Precio por unidad. |
 
-- fecha:
-  Tipo: String
-  Significado: Fecha en la que se realizó la venta.
+**Observaciones:** `Number` representa números y `String` texto. `fecha` es String porque está guardada como texto. `(index)` no es una propiedad: es la posición en el arreglo, que empieza en 0 (`ventas[0]` corresponde a la venta con id 1).
 
-- cliente:
-  Tipo: String
-  Significado: Código que identifica al cliente.
+### Casos borde y decisiones
 
-- producto:
-  Tipo: String
-  Significado: Nombre del producto vendido.
-
-- ciudad:
-  Tipo: String
-  Significado: Ciudad donde se registró la venta.
-
-- cantidad:
-  Tipo: Number
-  Significado: Cantidad de unidades vendidas.
-
-- precio:
-  Tipo: Number
-  Significado: Precio por unidad del producto.
-
-### Observaciones
-
-- Number: son valores numéricos sin comillas.
-- String: son valores de texto entre comillas.
-- fecha es String porque está guardada como texto.
-- (index) no es una propiedad, es la posición de cada objeto en el array. La posición empieza en 0, por eso ventas[0] es la venta con id 1.
-
-### Casos borde detectados
-
-#### 1. Clientes repetidos
-
-- Problema: C01 aparece 3 veces, y C02 y C03 aparecen 2 veces cada uno.
-- Decisión: se permiten varias compras por cliente. El ticket promedio se calcula por compra (por registro), no por cliente, así que no se agrupa por la propiedad cliente.
-
-#### 2. Cantidad igual a cero
-
-- Problema: la venta con id 8 tiene cantidad 0.
-- Decisión: no se cuenta como venta válida. Su valor es 0, así que no cambia el total vendido ni las unidades, pero no entra al conteo del ticket promedio. Si se contara, el promedio se dividiría entre 12 en vez de 11 y saldría más bajo por una compra que no ocurrió.
-
-#### 3. Ciudades escritas diferente
-
-- Problema: la venta con id 5 tiene la ciudad "medellín " (minúscula y con un espacio al final), mientras las demás dicen "Medellín".
-- Decisión: antes de comparar se normalizan las dos ciudades (la que llega por parámetro y la de cada venta) con la función normalizar. Los datos originales de datos.js no se modifican.
+1. **Clientes repetidos:** C01 aparece 3 veces; C02 y C03, 2 veces cada uno. Permito varias compras por cliente y calculo el ticket promedio por **venta**, no por cliente.
+2. **Cantidad cero:** la venta con id 8 tiene cantidad 0. No aporta dinero ni unidades y la excluyo del ticket promedio; así divido entre 11 ventas válidas en vez de 12.
+3. **Ciudades con formatos distintos:** la venta con id 5 tiene `"medellín "`, mientras otras tienen `"Medellín"`. Normalizo ambas ciudades antes de comparar, sin modificar `datos.js`.
 
 ---
 
-## MiniReto 2 - Los números del día: recorrer, filtrar y acumular
+## MiniReto 2 — Los números del día: recorrer, filtrar y acumular
 
 ### Plan en pseudocódigo
 
-#### valorVenta
+| Función | Qué hago | Caso especial |
+|---|---|---|
+| `valorVenta(venta)` | Multiplico `cantidad * precio` sin usar ciclos. | Si la cantidad es 0, devuelve 0. |
+| `totalVendido(ventas)` | Recorro las ventas y acumulo `valorVenta` desde 0. | Arreglo vacío: 0. |
+| `unidadesVendidas(ventas)` | Recorro las ventas y sumo `cantidad` desde 0. | Arreglo vacío: 0. |
+| `ventaMayor(ventas)` | Comparo `valorVenta` y guardo el **objeto completo** de la venta mayor. Inicio sin venta (`null`). | Arreglo vacío: `null`. En empate conservo la primera. |
+| `ticketPromedio(ventas)` | Sumo el valor de ventas con `cantidad > 0` y lo divido entre el número de ventas válidas. | Sin ventas válidas: 0, para evitar `NaN`. |
+| `normalizar(texto)` | Aplico `trim()`, `toLowerCase()`, `normalize("NFD")` y `replace()` para quitar espacios, mayúsculas y tildes. | La `ñ` también queda como `n`. |
+| `ventasPorCiudad(ventas, ciudad)` | Comparo ambas ciudades normalizadas y sumo los valores que coinciden desde 0. | Sin coincidencias o arreglo vacío: 0. `"Medellin"` coincide con `"Medellín"`. |
 
-- Recibe: una venta (un objeto)
-- Devuelve: cantidad multiplicada por precio
-- Ciclo: ninguno
-- Si la cantidad es 0: devuelve 0
-
-#### totalVendido
-
-- Recorro: cada venta del arreglo
-- Condición: ninguna (las ventas con cantidad 0 aportan 0)
-- Acumulo: el valorVenta de cada venta
-- Inicio en: 0
-- Si el arreglo está vacío: devuelve 0
-
-#### unidadesVendidas
-
-- Recorro: cada venta del arreglo
-- Condición: ninguna (las ventas con cantidad 0 suman 0 unidades)
-- Acumulo: la cantidad de cada venta (no el valor)
-- Inicio en: 0
-- Si el arreglo está vacío: devuelve 0
-
-#### ventaMayor
-
-- Recorro: cada venta del arreglo
-- Condición: todavía no hay venta guardada, o el valorVenta de la venta actual es mayor que el de la venta guardada
-- Guardo: el registro completo de la venta (no solo su valor)
-- Inicio en: null (no hay ninguna venta vista)
-- Si hay dos ventas con el mismo valor: se queda la primera, porque la comparación es "mayor que" y no "mayor o igual"
-- Si el arreglo está vacío: devuelve null
-
-#### ticketPromedio
-
-- Recorro: cada venta del arreglo
-- Condición: la cantidad es mayor que 0 (venta válida)
-- Acumulo: el valorVenta de cada venta válida
-- Cuento: cuántas ventas válidas hay
-- Inicio en: total en 0 y contador en 0
-- Después del ciclo: si el contador es 0, devuelve 0 y no divide
-- Al final: total dividido entre contador
-
-#### normalizar
-
-- Recibe: un texto
-- Devuelve: el mismo texto sin espacios en los extremos, en minúsculas y sin tildes
-- Pasos: trim() quita los espacios de los extremos, toLowerCase() pasa a minúsculas, normalize("NFD") separa cada letra de su tilde, y replace() borra las marcas de tilde
-- Efecto secundario: la ñ queda como n
-
-#### ventasPorCiudad
-
-- Recibe: el arreglo de ventas y una ciudad
-- Recorro: cada venta del arreglo
-- Condición: la ciudad recibida y la ciudad de la venta son iguales después de aplicar normalizar a las dos
-- Acumulo: el valorVenta de cada venta que cumple
-- Inicio en: 0
-- Si el arreglo está vacío o ninguna venta coincide: devuelve 0
-- Observación: como normalizar también quita tildes, "Medellin" sin tilde sí coincide con "Medellín"
-
-### Decisiones con arreglo vacío
-
-- totalVendido([]): devuelve 0. El ciclo no da vueltas y se queda el valor inicial del acumulador.
-- unidadesVendidas([]): devuelve 0, por la misma razón.
-- ventaMayor([]): devuelve null. No existe ninguna venta que devolver y un 0 parecería una venta.
-- ticketPromedio([]): devuelve 0. No hay ventas válidas y dividir 0 entre 0 daría NaN. Este 0 no significa que un cliente gastó 0, significa que no hay compras que promediar.
-- ventasPorCiudad([], ciudad): devuelve 0. No hay ventas que sumar.
-- valorVenta: recibe una sola venta, no un arreglo, así que el caso del arreglo vacío no aplica. Se prueba con una venta normal y con la venta de cantidad 0.
+**Decisión con arreglos vacíos:** las funciones acumuladoras devuelven 0 porque el ciclo no se ejecuta. `ventaMayor` devuelve `null` porque no existe un registro. En `ticketPromedio` verifico el contador **después** del ciclo, antes de dividir. `valorVenta` recibe un objeto, no un arreglo.
 
 ### Pruebas con tres entradas
 
-Entradas usadas:
+Utilicé el arreglo completo, una sola venta (`ventas[5]`: id 6, Bogotá, 2 unidades a $26.000) y el arreglo vacío.
 
-- Arreglo completo: ventas
-- Un solo elemento: [ventas[5]], que es la venta con id 6 (Bogotá, cantidad 2, precio 26000, valor 52000)
-- Arreglo vacío: []
+| Función | 12 ventas | 1 venta | Arreglo vacío |
+|---|---:|---:|---|
+| `totalVendido` | 985000 | 52000 | 0 |
+| `unidadesVendidas` | 21 | 2 | 0 |
+| `ventaMayor` | Venta id 10 | Venta id 6 | `null` |
+| `ticketPromedio` | 89545.45 | 52000 | 0 |
 
-#### Resultados
+**Pruebas adicionales:**
 
-| Función | Arreglo completo | Un solo elemento | Arreglo vacío |
-|---|---|---|---|
-| totalVendido | 985000 | 52000 | 0 |
-| unidadesVendidas | 21 | 2 | 0 |
-| ventaMayor | venta con id 10 | venta con id 6 | null |
-| ticketPromedio | 89545.45 | 52000 | 0 |
-
-#### valorVenta (recibe una venta)
-
-| Llamada | Resultado |
-|---|---|
-| valorVenta(ventas[0]) | 84000 |
-| valorVenta(ventas[7]) | 0 |
-
-#### ventasPorCiudad (recibe arreglo y ciudad)
-
-| Llamada | Resultado |
-|---|---|
-| ventasPorCiudad(ventas, "Medellín") | 356000 |
-| ventasPorCiudad([ventas[5]], "Bogotá") | 52000 |
-| ventasPorCiudad([], "Medellín") | 0 |
-| ventasPorCiudad(ventas, "  BOGOTÁ ") | 276000 |
-| ventasPorCiudad(ventas, "Barranquilla") | 0 |
-| ventasPorCiudad(ventas, "Medellin") | 356000 |
-
-#### Casos adicionales de ticketPromedio
-
-| Llamada | Resultado | Qué comprueba |
-|---|---|---|
-| ticketPromedio([ventas[7]]) | 0 | Solo hay una venta y tiene cantidad 0, no hay ventas válidas |
-| ticketPromedio([ventas[7], ventas[8]]) | 90000 | La venta con cantidad 0 llega primero y aun así se calcula la válida |
-
-#### Qué se observó
-
-- Con el arreglo vacío el ciclo no da ninguna vuelta, por eso las funciones que acumulan devuelven el 0 con el que empiezan.
-- ventaMayor devuelve null con el arreglo vacío porque guarda una venta completa, y no hay ninguna.
-- ticketPromedio necesita comprobar el contador después del ciclo y antes de dividir. Si se comprobara dentro del ciclo, una venta con cantidad 0 al inicio cortaría la función antes de revisar las válidas.
-- Con un solo elemento, ventaMayor devuelve esa misma venta y los promedios dan el valor de esa venta.
+- `valorVenta(ventas[0])` → 84000; `valorVenta(ventas[7])` → 0.
+- `ventasPorCiudad(ventas, "Medellín")` → 356000; con `[ventas[5]]` y `"Bogotá"` → 52000; con `[]` o `"Barranquilla"` → 0.
+- `ventasPorCiudad(ventas, "  BOGOTÁ ")` → 276000 y con `"Medellin"` → 356000: la normalización funciona.
+- `ticketPromedio([ventas[7]])` → 0; `ticketPromedio([ventas[7], ventas[8]])` → 90000. Una venta inválida al comienzo no interrumpe el cálculo.
 
 ### Verificación a mano (trazas)
 
-#### Traza 1: totalVendido(ventas)
+**Traza 1 — `totalVendido(ventas)`**. Inicio con `total = 0`; sumo todas las ventas, incluida la de cantidad cero.
 
-Valor inicial: total = 0. No hay condición, todas las ventas se suman.
-
-| Vuelta | id | cantidad | precio | valorVenta | total |
-|---|---|---|---|---|---|
-| inicio | | | | | 0 |
+| Vuelta | id | Cantidad | Precio | Valor de venta | Total acumulado |
+|---|---:|---:|---:|---:|---:|
+| Inicio | — | — | — | — | 0 |
 | 1 | 1 | 2 | 42000 | 84000 | 84000 |
 | 2 | 2 | 1 | 26000 | 26000 | 110000 |
 | 3 | 3 | 1 | 95000 | 95000 | 205000 |
@@ -203,89 +80,43 @@ Valor inicial: total = 0. No hay condición, todas las ventas se suman.
 | 11 | 11 | 1 | 95000 | 95000 | 907000 |
 | 12 | 12 | 3 | 26000 | 78000 | 985000 |
 
-La venta con id 8 tiene cantidad 0, así que su valor es 0 y el total no cambia en esa vuelta.
+**Resultado:** 985000, igual al programa. En la venta 8 el total no cambia.
 
-Resultado de la traza: 985000.
+**Traza 2 — `ventasPorCiudad(ventas, "Medellín")`**. Normalizo la ciudad a `"medellin"` y comienzo en 0.
 
-Resultado del programa: 985000. Coincide con la traza.
+| Vuelta | id | Ciudad original | ¿Coincide? | Valor sumado | Total ciudad |
+|---|---:|---|---|---:|---:|
+| Inicio | — | — | — | — | 0 |
+| 1 | 1 | Medellín | Sí | 84000 | 84000 |
+| 2 | 2 | Bogotá | No | 0 | 84000 |
+| 3 | 3 | Cali | No | 0 | 84000 |
+| 4 | 4 | Medellín | Sí | 42000 | 126000 |
+| 5 | 5 | `medellín ` | Sí | 135000 | 261000 |
+| 6 | 6 | Bogotá | No | 0 | 261000 |
+| 7 | 7 | Bogotá | No | 0 | 261000 |
+| 8 | 8 | Cali | No | 0 | 261000 |
+| 9 | 9 | Cali | No | 0 | 261000 |
+| 10 | 10 | Pereira | No | 0 | 261000 |
+| 11 | 11 | Medellín | Sí | 95000 | 356000 |
+| 12 | 12 | Bogotá | No | 0 | 356000 |
 
-#### Traza 2: ventasPorCiudad(ventas, "Medellín")
-
-La ciudad recibida, normalizada, queda "medellin". Valor inicial: totalciudad = 0.
-
-| Vuelta | id | ciudad original | ciudad normalizada | ¿Igual a "medellin"? | valorVenta sumado | totalciudad |
-|---|---|---|---|---|---|---|
-| inicio | | | | | | 0 |
-| 1 | 1 | "Medellín" | "medellin" | Sí | 84000 | 84000 |
-| 2 | 2 | "Bogotá" | "bogota" | No | | 84000 |
-| 3 | 3 | "Cali" | "cali" | No | | 84000 |
-| 4 | 4 | "Medellín" | "medellin" | Sí | 42000 | 126000 |
-| 5 | 5 | "medellín " | "medellin" | Sí | 135000 | 261000 |
-| 6 | 6 | "Bogotá" | "bogota" | No | | 261000 |
-| 7 | 7 | "Bogotá" | "bogota" | No | | 261000 |
-| 8 | 8 | "Cali" | "cali" | No | | 261000 |
-| 9 | 9 | "Cali" | "cali" | No | | 261000 |
-| 10 | 10 | "Pereira" | "pereira" | No | | 261000 |
-| 11 | 11 | "Medellín" | "medellin" | Sí | 95000 | 356000 |
-| 12 | 12 | "Bogotá" | "bogota" | No | | 356000 |
-
-Resultado de la traza: 356000. La venta con id 5 ("medellín ") sí se suma gracias a la normalización.
-
-Resultado del programa: 356000. Coincide con la traza.
+**Resultado:** 356000, igual al programa. La venta 5 se incluye gracias a la normalización.
 
 ---
 
-## MiniReto 3 - Del ciclo al método: rankings y agrupaciones
+## MiniReto 3 — Del ciclo al método: rankings y agrupaciones
 
-### totalVendidoM
+### Funciones con métodos de arreglos
 
-- ¿Qué recorro?: cada venta del arreglo usando reduce().
-- ¿Qué filtro?: ninguno, todas las ventas participan.
-- ¿Qué transformo?: cada venta en su valor total usando valorVenta(venta).
-- ¿Qué acumulo?: el dinero generado por todas las ventas.
-- ¿Cómo agrupo?: no agrupo, solamente sumo todos los valores en un acumulador que inicia en 0.
-- Resultado: 985000.
+- **`totalVendidoM`:** uso `reduce()` para acumular `valorVenta(venta)` desde 0, sin filtrar ni agrupar. **Resultado:** 985000.
+- **`unidadesVendidasM`:** uso `reduce()` para sumar `cantidad`, incluyendo las ventas de cantidad cero. **Resultado:** 21 unidades.
+- **`ventasPorCiudadM`:** uso `filter()` para seleccionar la ciudad normalizada y `reduce()` para sumar sus ventas. **Medellín:** 356000.
 
-### unidadesVendidasM
+En `verificar.js` comparé las versiones originales y las versiones con métodos usando los mismos datos y parámetros. Las tres comparaciones (`totalVendido`, `unidadesVendidas` y `ventasPorCiudad`) dieron **OK** con `===`.
 
-- ¿Qué recorro?: cada venta del arreglo usando reduce().
-- ¿Qué filtro?: ninguno, las ventas con cantidad 0 también se recorren, pero suman 0.
-- ¿Qué transformo?: de cada venta obtengo su propiedad cantidad.
-- ¿Qué acumulo?: las unidades vendidas usando un acumulador que inicia en 0.
-- ¿Cómo agrupo?: no agrupo por producto ni ciudad, solamente calculo el total de unidades.
-- Resultado: 21 unidades.
+### Agrupaciones y ranking
 
-### ventasPorCiudadM
-
-- ¿Qué recorro?: el arreglo ventas usando filter() y después las ventas seleccionadas usando reduce().
-- ¿Qué filtro?: las ventas cuya ciudad normalizada coincide con la ciudad recibida por parámetro.
-- ¿Qué transformo?: normalizo los nombres de las ciudades para compararlos y utilizo valorVenta() para obtener el dinero de cada venta.
-- ¿Qué acumulo?: el dinero generado por las ventas que pertenecen a la ciudad solicitada.
-- ¿Cómo agrupo?: no construyo grupos, solamente selecciono las ventas de una ciudad y sumo sus valores.
-- Resultado con Medellín: 356000.
-
-### Verificación de funciones con ciclos y métodos
-
-Se creó verificar.js para comprobar que las funciones originales y las versiones con métodos devolvieran los mismos resultados.
-
-- totalVendido y totalVendidoM: OK.
-- unidadesVendidas y unidadesVendidasM: OK.
-- ventasPorCiudad y ventasPorCiudadM: OK.
-
-Decisión: utilizar los mismos datos y parámetros para las dos versiones de cada indicador. Los resultados se comparan con === y se muestra OK si coinciden o DIFERENTE si no coinciden.
-
-### totalPorCiudad
-
-- ¿Qué recorro?: todas las ventas utilizando reduce().
-- ¿Qué filtro?: ninguno, todas las ventas participan.
-- ¿Qué transformo?: el nombre de cada ciudad utilizando normalizar() y cada venta en su valor monetario usando valorVenta().
-- ¿Qué acumulo?: el dinero generado por las ventas de cada ciudad.
-- ¿Cómo agrupo?: utilizo un objeto como diccionario. Cada ciudad normalizada funciona como una clave y su valor contiene el dinero acumulado.
-- Inicio en: un objeto vacío {}.
-- Condición: si la ciudad todavía no existe en el acumulador, creo su propiedad y la inicializo en 0.
-- Si la ciudad ya existe: sumo el valor de la nueva venta sin reiniciar su total.
-
-Resultados:
+**`totalPorCiudad`:** recorro todas las ventas con `reduce()`, normalizo la ciudad y acumulo dinero en un objeto `{}`. Si una clave no existe, la inicio en 0; si existe, sigo sumando.
 
 | Ciudad | Total vendido |
 |---|---:|
@@ -295,21 +126,9 @@ Resultados:
 | pereira | 168000 |
 | **Total** | **985000** |
 
-Observación: el objeto devuelve exactamente cuatro ciudades y no aparecen grupos duplicados gracias a la normalización.
+Obtengo cuatro ciudades sin duplicados por diferencias de escritura.
 
-### unidadesPorProducto
-
-- ¿Qué recorro?: todas las ventas utilizando reduce().
-- ¿Qué filtro?: ninguno, todas las ventas participan.
-- ¿Qué transformo?: normalizo el nombre de cada producto para utilizarlo como clave del objeto.
-- ¿Qué acumulo?: la cantidad de unidades vendidas de cada producto.
-- ¿Cómo agrupo?: utilizo un objeto como diccionario donde cada producto es una clave y las unidades acumuladas son su valor.
-- Inicio en: un objeto vacío {}.
-- Condición: si el producto todavía no existe, creo su propiedad y la inicializo en 0.
-- Si el producto ya existe: sumo la cantidad de la venta actual al total que tenía guardado.
-- Prueba adicional: también calculé el total general de unidades vendidas usando otro acumulador.
-
-Resultados:
+**`unidadesPorProducto`:** uso `reduce()` y un objeto para agrupar las cantidades por nombre de producto normalizado. Cada clave empieza en 0 y acumula unidades.
 
 | Producto | Unidades |
 |---|---:|
@@ -320,21 +139,9 @@ Resultados:
 | molino manual | 1 |
 | **Total** | **21** |
 
-### topProductosPorValor
+**`topProductosPorValor(ventas, 3)`:** agrupo el dinero por producto con `reduce()`, convierto el objeto en arreglo con `Object.entries()`, ordeno de mayor a menor mediante `sort((a, b) => b[1] - a[1])` y selecciono los primeros `k` con `slice(0, k)`.
 
-- ¿Qué recorro?: todas las ventas utilizando reduce() y posteriormente las parejas de productos para ordenarlas con sort().
-- ¿Qué filtro?: no excluyo ventas durante la agrupación. Al final selecciono solamente los primeros k productos usando slice().
-- ¿Qué transformo?: normalizo los nombres de los productos, calculo su valor monetario y convierto el objeto agrupado en un arreglo usando Object.entries().
-- ¿Qué acumulo?: el dinero generado por todas las ventas de cada producto.
-- ¿Cómo agrupo?: utilizo un objeto como diccionario, donde cada producto es una clave y su valor es el dinero acumulado.
-- Inicio en: un objeto vacío {}.
-- Condición: si el producto todavía no existe, creo su propiedad en 0; si existe, sigo sumando su valor.
-- Ordenamiento: utilizo sort() con una función de comparación que resta b[1] - a[1], para organizar los productos de mayor a menor valor.
-- Selección: slice(0, k) permite devolver únicamente los primeros k productos.
-
-Resultados de topProductosPorValor(ventas, 3):
-
-| Posición | Producto | Valor generado |
+| Puesto | Producto | Valor generado |
 |---|---|---:|
 | 1 | origen huila 500 g | 294000 |
 | 2 | origen sierra 500 g | 225000 |
@@ -342,122 +149,68 @@ Resultados de topProductosPorValor(ventas, 3):
 
 ### Verificación del orden original
 
-El reto exige que el arreglo ventas conserve su orden después de ejecutar topProductosPorValor().
+Copié `ventas` con `[...ventas]`, obtuve los ID antes y después con `map()` y ejecuté el ranking. El orden fue **1, 2, 3, ..., 12** en ambas comprobaciones. `sort()` modifica el arreglo nuevo creado a partir de `Object.entries()`, **no** el arreglo original `ventas`; `slice()` también devuelve otro arreglo.
 
-- Antes de ejecutar la función: creé una copia del arreglo usando [...ventas].
-- Utilicé map() para obtener los ID de las ventas originales.
-- Ejecuté topProductosPorValor(ventas, 3).
-- Después utilicé map() nuevamente para obtener los ID del arreglo ventas.
-- Comparé visualmente el orden de ambas listas.
+---
 
-Resultado antes:
+## MiniReto 4 — Registro de depuración
 
-1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+### Error 1: ciudades duplicadas
 
-Resultado después:
-
-1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
-
-Conclusión: el orden de las ventas originales se conservó.
-
-Observación: Object.entries() crea un arreglo nuevo con los productos agrupados. sort() modifica ese nuevo arreglo, no ventas. Después slice() devuelve otro arreglo con los primeros k productos sin modificar el arreglo del que se extrajo.
-
-## Registro de depuración - MiniReto 4
-
-### Error 1: Ciudades duplicadas
-
-- Síntoma: Bogotá aparecía dos veces en el reporte porque estaba escrita de diferentes maneras.
-- Entrada que lo produce: dos propiedades con nombres "Bogotá" y "BOGOTÁ", con valores de 10000 y 20000.
-- Hipótesis: JavaScript interpreta las ciudades como claves diferentes porque sus nombres no coinciden exactamente.
-- Prueba realizada: creé un objeto llamado ciudadesPruebas con las dos ciudades sin normalizar. Al imprimirlo aparecieron dos propiedades distintas.
-- Causa: los nombres de las propiedades distinguen mayúsculas, minúsculas y espacios.
-- Corrección: utilicé la función normalizar() para convertir los nombres a minúsculas, quitar espacios y eliminar tildes. Después sumé los 20000 a la propiedad que ya tenía 10000.
-
-Resultado sin normalización:
+- **Síntoma:** Bogotá aparecía dos veces en el reporte.
+- **Prueba:** creé un objeto con `"Bogotá": 10000` y `"BOGOTÁ": 20000`; JavaScript las guardó como claves diferentes.
+- **Causa:** los nombres de propiedades distinguen mayúsculas, minúsculas y espacios.
+- **Corrección:** normalicé las ciudades antes de agruparlas. Los valores quedaron en una sola clave:
 
 ```js
+// Sin normalizar
 { 'Bogotá': 10000, 'BOGOTÁ': 20000 }
-```
-
-Resultado con normalización:
-
-```js
+// Normalizado
 { bogota: 30000 }
 ```
 
-Conclusión: al normalizar las ciudades antes de utilizarlas como claves, las ventas de una misma ciudad se acumulan en una sola propiedad.
+### Error 2: `NaN` en `ticketPromedio`
 
-### Error 2: NaN en ticketPromedio
+- **Síntoma:** el promedio devolvía `NaN` al consultar un día sin ventas, por ejemplo `"2026-09-10"`.
+- **Prueba y causa:** creé dos variables con valor 0 y comprobé que `0 / 0` da `NaN`.
+- **Corrección:** verifico que el contador de ventas válidas sea distinto de 0 antes de dividir. `ticketPromedio([])` devuelve **0**.
 
-- Síntoma: el ticket promedio mostraba NaN cuando se consultaba un día sin ventas.
-- Entrada que lo produce: una fecha sin registros, como "2026-09-10".
-- Hipótesis: cuando no existen ventas, el total vendido y el contador de ventas válidas quedan en 0. Al dividir 0 entre 0 se obtiene NaN.
-- Prueba realizada: creé dos variables llamadas totalDia y cantidadVentas, ambas en 0. Después dividí sus valores y comprobé que el resultado era NaN.
-- Causa: realizar una división sin comprobar primero si existen ventas válidas.
-- Corrección: la función ticketPromedio() comprueba si el contador de ventas válidas es igual a 0 antes de dividir. Si no hay ventas válidas, devuelve 0.
+**Resultado de depuración:** reproduje ambos problemas y comprobé sus correcciones mediante `normalizar()` y `ticketPromedio()`.
 
-Resultado de la prueba sin validación:
+---
 
-```js
-0 / 0 // NaN
-```
-
-Resultado utilizando nuestra función:
-
-```js
-ticketPromedio([]) // 0
-```
-
-Conclusión: la validación evita dividir entre cero y permite consultar días sin ventas sin obtener NaN.
-
-### Resultado general de la depuración
-
-- Error 1: reproducido y comprobada la corrección mediante normalizar().
-- Error 2: reproducido y comprobada la corrección mediante ticketPromedio().
-- Las pruebas demostraron que nuestra implementación evita ambos problemas reportados por la gerente.
-
-## Día 2 — MiniReto 5: 
+## Día 2 — MiniReto 5: medición de algoritmos
 
 ### 1. Generador de ventas
 
-Creamos la función `generarVentas(n)` para generar la cantidad de ventas que necesitemos. Utilizamos `Math.random()` y `Math.floor()` para seleccionar productos, ciudades, cantidades y clientes aleatorios.
-
-También implemente fechas aleatorias del año 2026 utilizando `Date`.
-
-Utilice un ciclo `for` para crear las ventas, `push()` para guardarlas en un arreglo y `return` para devolverlas.
+Creé `generarVentas(n)` para producir la cantidad de ventas indicada. Utilicé `Math.random()` y `Math.floor()` para seleccionar productos, ciudades, cantidades y clientes; `Date` para generar fechas aleatorias de 2026; un ciclo `for` para crear registros; `push()` para guardarlos y `return` para devolver el arreglo.
 
 ### 2. Funciones instrumentadas
 
-Cree tres versiones instrumentadas de nuestras funciones originales:
+Creé `totalVendidoInstrumentado`, `ventaMayorInstrumentalizada` y `totalVentasPorCiudadInstrumentalizada`. A cada una le pasé un contador con `visitas` y `comparaciones`. Aprendí que puedo modificar las propiedades de ese objeto dentro de la función sin devolver el contador con `return`. Probé las tres funciones con las 12 ventas originales y sus resultados fueron correctos.
 
-- `totalVendidoInstrumentado`
-- `ventaMayorInstrumentalizada`
-- `totalVentasPorCiudadInstrumentalizada`
+También creé `primeraVenta(ventas, contador)`, que obtiene directamente `ventas[0]` y registra una visita, sin recorrer el arreglo.
 
-Agrege un objeto contador para registrar cuántas ventas revisa cada función y cuántas condiciones evalúa.
+### 3. Predicciones y mediciones
 
-Aprendi que podemos pasar el contador como argumento y modificar sus propiedades dentro de la función, sin necesidad de devolverlo con `return`.
+Antes de probar 100, 1.000, 10.000 y 100.000 ventas, predije cuántas operaciones registraría cada función. Después creé un **orquestador** para ejecutar las pruebas y mostré las operaciones con `console.table()`.
 
-Probe las funciones con las 12 ventas originales y comprobamos que los resultados eran correctos.
+| Ventas | Total vendido | Venta mayor | Total por ciudad | Primera venta |
+|---|---:|---:|---:|---:|
+| 100 | 100 | 200 | 200 | 1 |
+| 1.000 | 1.000 | 2.000 | 2.000 | 1 |
+| 10.000 | 10.000 | 20.000 | 20.000 | 1 |
+| 100.000 | 100.000 | 200.000 | 200.000 | 1 |
 
-### 3. Predicciones antes de medir
+Los valores representan **visitas + comparaciones registradas**. Las mediciones coincidieron con mis predicciones.
 
-Antes de ejecutar las pruebas, analizamos cómo creemos que crecerán las operaciones cuando aumentemos las ventas.
+### 4. Conclusiones de Big O
 
-| Cantidad de ventas | Total vendido | Venta mayor | Total por ciudad |
-|---|---:|---:|---:|
-| 100 | 100 | 200 | 200 |
-| 1.000 | 1.000 | 2.000 | 2.000 |
-| 10.000 | 10.000 | 20.000 | 20.000 |
-| 100.000 | 100.000 | 200.000 | 200.000 |
+- **`totalVendido` — O(n):** recorro todas las ventas para sumar sus valores.
+- **`ventaMayor` — O(n):** reviso todas las ventas para encontrar la mayor.
+- **`totalPorCiudad` — O(n):** recorro todas las ventas para acumular por ciudad.
+- **`primeraVenta` — O(1):** accedo directamente a `ventas[0]`, así que registro una visita sin importar el tamaño del arreglo.
 
-Los números representan las operaciones que esperamos contar, sumando visitas y evaluaciones registradas.
+Comprendí que **O(n)** es crecimiento lineal: si las ventas aumentan 10 veces, las operaciones contabilizadas también aumentan 10 veces. Tener dos operaciones por venta no significa **O(n²)**; ese crecimiento cuadrático aparecería, por ejemplo, al recorrer todo el arreglo dentro de otro recorrido del mismo tamaño. Un acumulador por sí solo no convierte una función en O(n²).
 
-### 4. Complejidad algorítmica
-
-Mi predicción es que las tres funciones tienen complejidad **O(n)**, porque recorren las ventas una sola vez.
-
-Aprendi que O(n) significa crecimiento lineal: si multiplicamos las ventas por 10, las operaciones también aumentan aproximadamente 10 veces.
-
-Al principio pensé que utilizar un acumulador podía hacer que una función fuera O(n²), pero entendí que acumular valores no significa recorrer nuevamente los datos.
-
+**Conclusión general:** aprendí a generar datos de prueba, medir operaciones y distinguir entre complejidad constante **O(1)** y lineal **O(n)**.
