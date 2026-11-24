@@ -1,6 +1,6 @@
-# Bitácora — Café Origen Analítica
+# Bitácora — Café Origen
 
-## MiniReto 1 — Conociendo los datos
+## MiniReto 1 — Datos de ventas
 
 ### Diccionario de datos
 
@@ -16,7 +16,7 @@ El arreglo `ventas` contiene **12 objetos**, cada uno con **7 propiedades**:
 | `cantidad` | Number | Unidades vendidas. |
 | `precio` | Number | Precio por unidad. |
 
-**Observaciones:** `Number` representa números y `String` texto. `fecha` es String porque está guardada como texto. `(index)` no es una propiedad: es la posición en el arreglo, que empieza en 0 (`ventas[0]` corresponde a la venta con id 1).
+**Observaciones:** `Number` es numérico; `String`, texto (incluida `fecha`). `(index)` es la posición en el arreglo, no una propiedad: comienza en 0, así que `ventas[0]` tiene id 1.
 
 ### Casos borde y decisiones
 
@@ -26,9 +26,9 @@ El arreglo `ventas` contiene **12 objetos**, cada uno con **7 propiedades**:
 
 ---
 
-## MiniReto 2 — Los números del día: recorrer, filtrar y acumular
+## MiniReto 2 — Cálculos y pruebas
 
-### Plan en pseudocódigo
+### Funciones y casos especiales
 
 | Función | Qué hago | Caso especial |
 |---|---|---|
@@ -40,7 +40,7 @@ El arreglo `ventas` contiene **12 objetos**, cada uno con **7 propiedades**:
 | `normalizar(texto)` | Aplico `trim()`, `toLowerCase()`, `normalize("NFD")` y `replace()` para quitar espacios, mayúsculas y tildes. | La `ñ` también queda como `n`. |
 | `ventasPorCiudad(ventas, ciudad)` | Comparo ambas ciudades normalizadas y sumo los valores que coinciden desde 0. | Sin coincidencias o arreglo vacío: 0. `"Medellin"` coincide con `"Medellín"`. |
 
-**Decisión con arreglos vacíos:** las funciones acumuladoras devuelven 0 porque el ciclo no se ejecuta. `ventaMayor` devuelve `null` porque no existe un registro. En `ticketPromedio` verifico el contador **después** del ciclo, antes de dividir. `valorVenta` recibe un objeto, no un arreglo.
+**Con arreglos vacíos:** los acumuladores quedan en 0, `ventaMayor` devuelve `null` y `ticketPromedio` comprueba el contador antes de dividir. `valorVenta` recibe un objeto, no un arreglo.
 
 ### Pruebas con tres entradas
 
@@ -60,7 +60,7 @@ Utilicé el arreglo completo, una sola venta (`ventas[5]`: id 6, Bogotá, 2 unid
 - `ventasPorCiudad(ventas, "  BOGOTÁ ")` → 276000 y con `"Medellin"` → 356000: la normalización funciona.
 - `ticketPromedio([ventas[7]])` → 0; `ticketPromedio([ventas[7], ventas[8]])` → 90000. Una venta inválida al comienzo no interrumpe el cálculo.
 
-### Verificación a mano (trazas)
+### Trazas manuales
 
 **Traza 1 — `totalVendido(ventas)`**. Inicio con `total = 0`; sumo todas las ventas, incluida la de cantidad cero.
 
@@ -104,9 +104,9 @@ Utilicé el arreglo completo, una sola venta (`ventas[5]`: id 6, Bogotá, 2 unid
 
 ---
 
-## MiniReto 3 — Del ciclo al método: rankings y agrupaciones
+## MiniReto 3 — Métodos y agrupaciones
 
-### Funciones con métodos de arreglos
+### Funciones con métodos
 
 - **`totalVendidoM`:** uso `reduce()` para acumular `valorVenta(venta)` desde 0, sin filtrar ni agrupar. **Resultado:** 985000.
 - **`unidadesVendidasM`:** uso `reduce()` para sumar `cantidad`, incluyendo las ventas de cantidad cero. **Resultado:** 21 unidades.
@@ -114,7 +114,7 @@ Utilicé el arreglo completo, una sola venta (`ventas[5]`: id 6, Bogotá, 2 unid
 
 En `verificar.js` comparé las versiones originales y las versiones con métodos usando los mismos datos y parámetros. Las tres comparaciones (`totalVendido`, `unidadesVendidas` y `ventasPorCiudad`) dieron **OK** con `===`.
 
-### Agrupaciones y ranking
+### Resultados por ciudad y producto
 
 **`totalPorCiudad`:** recorro todas las ventas con `reduce()`, normalizo la ciudad y acumulo dinero en un objeto `{}`. Si una clave no existe, la inicio en 0; si existe, sigo sumando.
 
@@ -147,15 +147,15 @@ Obtengo cuatro ciudades sin duplicados por diferencias de escritura.
 | 2 | origen sierra 500 g | 225000 |
 | 3 | prensa francesa | 190000 |
 
-### Verificación del orden original
+### Orden de las ventas
 
-Copié `ventas` con `[...ventas]`, obtuve los ID antes y después con `map()` y ejecuté el ranking. El orden fue **1, 2, 3, ..., 12** en ambas comprobaciones. `sort()` modifica el arreglo nuevo creado a partir de `Object.entries()`, **no** el arreglo original `ventas`; `slice()` también devuelve otro arreglo.
+Copié `ventas` con `[...ventas]` y comparé los ID antes y después del ranking mediante `map()`: se conservó el orden **1, 2, 3, ..., 12**. `sort()` modificó el arreglo creado por `Object.entries()`, no las ventas originales; `slice()` también devuelve otro arreglo.
 
 ---
 
-## MiniReto 4 — Registro de depuración
+## MiniReto 4 — Errores y soluciones
 
-### Error 1: ciudades duplicadas
+### Ciudades duplicadas
 
 - **Síntoma:** Bogotá aparecía dos veces en el reporte.
 - **Prueba:** creé un objeto con `"Bogotá": 10000` y `"BOGOTÁ": 20000`; JavaScript las guardó como claves diferentes.
@@ -169,29 +169,29 @@ Copié `ventas` con `[...ventas]`, obtuve los ID antes y después con `map()` y 
 { bogota: 30000 }
 ```
 
-### Error 2: `NaN` en `ticketPromedio`
+### Promedio con `NaN`
 
 - **Síntoma:** el promedio devolvía `NaN` al consultar un día sin ventas, por ejemplo `"2026-09-10"`.
 - **Prueba y causa:** creé dos variables con valor 0 y comprobé que `0 / 0` da `NaN`.
 - **Corrección:** verifico que el contador de ventas válidas sea distinto de 0 antes de dividir. `ticketPromedio([])` devuelve **0**.
 
-**Resultado de depuración:** reproduje ambos problemas y comprobé sus correcciones mediante `normalizar()` y `ticketPromedio()`.
+**Resultado:** reproduje ambos errores y comprobé las correcciones.
 
 ---
 
-## Día 2 — MiniReto 5: medición de algoritmos
+## MiniReto 5 — Medición de algoritmos
 
-### 1. Generador de ventas
+### Generador de ventas
 
 Creé `generarVentas(n)` para producir la cantidad de ventas indicada. Utilicé `Math.random()` y `Math.floor()` para seleccionar productos, ciudades, cantidades y clientes; `Date` para generar fechas aleatorias de 2026; un ciclo `for` para crear registros; `push()` para guardarlos y `return` para devolver el arreglo.
 
-### 2. Funciones instrumentadas
+### Contadores y funciones
 
 Creé `totalVendidoInstrumentado`, `ventaMayorInstrumentalizada` y `totalVentasPorCiudadInstrumentalizada`. A cada una le pasé un contador con `visitas` y `comparaciones`. Aprendí que puedo modificar las propiedades de ese objeto dentro de la función sin devolver el contador con `return`. Probé las tres funciones con las 12 ventas originales y sus resultados fueron correctos.
 
 También creé `primeraVenta(ventas, contador)`, que obtiene directamente `ventas[0]` y registra una visita, sin recorrer el arreglo.
 
-### 3. Predicciones y mediciones
+### Pruebas y resultados
 
 Antes de probar 100, 1.000, 10.000 y 100.000 ventas, predije cuántas operaciones registraría cada función. Después creé un **orquestador** para ejecutar las pruebas y mostré las operaciones con `console.table()`.
 
@@ -204,13 +204,82 @@ Antes de probar 100, 1.000, 10.000 y 100.000 ventas, predije cuántas operacione
 
 Los valores representan **visitas + comparaciones registradas**. Las mediciones coincidieron con mis predicciones.
 
-### 4. Conclusiones de Big O
+### Conclusiones
 
 - **`totalVendido` — O(n):** recorro todas las ventas para sumar sus valores.
 - **`ventaMayor` — O(n):** reviso todas las ventas para encontrar la mayor.
 - **`totalPorCiudad` — O(n):** recorro todas las ventas para acumular por ciudad.
 - **`primeraVenta` — O(1):** accedo directamente a `ventas[0]`, así que registro una visita sin importar el tamaño del arreglo.
 
-Comprendí que **O(n)** es crecimiento lineal: si las ventas aumentan 10 veces, las operaciones contabilizadas también aumentan 10 veces. Tener dos operaciones por venta no significa **O(n²)**; ese crecimiento cuadrático aparecería, por ejemplo, al recorrer todo el arreglo dentro de otro recorrido del mismo tamaño. Un acumulador por sí solo no convierte una función en O(n²).
+Comprendí que **O(n)** crece de forma lineal: 10 veces más ventas implican 10 veces más operaciones registradas. Dos operaciones por venta, o usar un acumulador, no significan **O(n²)**; el crecimiento cuadrático aparece, por ejemplo, con recorridos anidados sobre todos los elementos.
 
-**Conclusión general:** aprendí a generar datos de prueba, medir operaciones y distinguir entre complejidad constante **O(1)** y lineal **O(n)**.
+Aprendí a generar datos, medir operaciones y distinguir **O(1)** de **O(n)**.
+
+---
+
+---
+
+## MiniReto 6 — Clientes recurrentes
+
+### Prueba con las 12 ventas
+
+Agregué la función original `clientesRecurrentes(ventas)` a `analitica.js` y la probé desde `verificar.js`. Obtuve **`["C01", "C02", "C03"]`**, como pedía el reto. El primer `for` selecciona una venta (`i`) y el segundo (`j = i + 1`) la compara con las posteriores. Si el cliente se repite y aún no está en `recurrentes`, lo agrego con `push()`.
+
+### Traza con 5 ventas
+
+Usé este arreglo de prueba: **`[C01, C02, C01, C03, C02]`**. Seguí las comparaciones entre `ventas[i].cliente` y `ventas[j].cliente`:
+
+| `i` | `j` | Clientes comparados | ¿Iguales? |
+|---:|---:|---|---|
+| 0 | 1 | C01 / C02 | No |
+| 0 | 2 | C01 / C01 | Sí: guardo C01 |
+| 0 | 3 | C01 / C03 | No |
+| 0 | 4 | C01 / C02 | No |
+| 1 | 2 | C02 / C01 | No |
+| 1 | 3 | C02 / C03 | No |
+| 1 | 4 | C02 / C02 | Sí: guardo C02 |
+| 2 | 3 | C01 / C03 | No |
+| 2 | 4 | C01 / C02 | No |
+| 3 | 4 | C03 / C02 | No |
+
+**Resultado:** `['C01', 'C02']`. Conté **10 comparaciones**: 4 cuando `i = 0`, luego 3, 2, 1 y 0. `i` solo avanza cuando termina el ciclo de `j`.
+
+### Comparaciones para cualquier cantidad de ventas
+
+Generalicé el patrón con la fórmula **`n × (n - 1) / 2`**, donde `n` es el número de ventas. Comprobé que con **5 ventas hay 10** comparaciones, con **6 hay 15** y con **10 hay 45**. La fórmula cuenta las comparaciones entre dos ventas, **sin incluir el trabajo interno de `includes()`**.
+
+### Medición de tiempos
+
+Usé el generador del MiniReto 5 y rodeé únicamente la ejecución de `clientesRecurrentes()` con `console.time()` y `console.timeEnd()`, usando la misma etiqueta. Las ventas se generaron antes de iniciar el cronómetro.
+
+| Ventas | Comparaciones calculadas | Tiempo medido | Aumento del tiempo |
+|---:|---:|---:|---:|
+| 1.000 | 499.500 | 1,701 ms | — |
+| 2.000 | 1.999.000 | 5,149 ms | ×3,03 |
+| 4.000 | 7.998.000 | 15,188 ms | ×2,95 |
+| 8.000 | 31.996.000 | 79,484 ms | ×5,23 |
+| 16.000 | 127.992.000 | 440,296 ms | ×5,54 |
+| 100.000 | 4.999.950.000 | 41,867 s | — |
+
+**Análisis:** al duplicar las ventas, las comparaciones crecen aproximadamente **4 veces**. Los tiempos no aumentaron exactamente por cuatro porque dependen de la ejecución y del costo de otras operaciones. Los ciclos anidados tienen complejidad **O(n²)**: al pasar de 1.000 a 16.000 ventas, los datos crecieron 16 veces, pero las comparaciones casi 256 veces.
+
+### Estimaciones para más ventas
+
+Usé las mediciones reales y un **modelo aproximado O(n²)** para estimar tiempos antes de ejecutar entradas más grandes.
+
+- **100.000 ventas:** partí de 16.000 ventas y **440,296 ms**. Como `100.000 / 16.000 = 6,25`, calculé `440,296 × 6,25² ≈ 17.199 ms`, es decir, **17,2 segundos**. Como la estimación era menor de dos minutos, ejecuté la prueba: el tiempo real fue **41,867 segundos**.
+- **1.000.000 de ventas:** partí de los **41,867 segundos reales** de 100.000 ventas. Como el tamaño se multiplica por 10, estimé `41,867 × 10² = 4.186,7 segundos`, aproximadamente **69,8 minutos (1 hora y 10 minutos)**. No ejecuté esta cantidad.
+
+La estimación es orientativa: el tiempo real puede cambiar y el modelo cuadrático no incluye por completo el costo adicional de `includes()`.
+
+### Costo oculto de `includes()` y peor caso
+
+Descubrí que **`recurrentes.includes(cliente)` también recorre un arreglo**: en el peor caso revisa todos los clientes guardados, por lo que su búsqueda es **O(r)**, donde `r` es la cantidad de clientes en `recurrentes`. Gracias al operador `&&`, solo se ejecuta cuando las dos ventas comparadas pertenecen al mismo cliente.
+
+Aunque las comparaciones de los dos `for` son **O(n²)**, si `includes()` debe buscar en un arreglo grande muchas veces, el **peor caso de la función completa puede llegar a O(n³)**. Por eso, contar únicamente las comparaciones entre ventas no refleja todo el trabajo del reporte.
+
+### Conclusión para la gerente
+
+Comprobé que el reporte tarda mucho más cuando aumenta la cantidad de ventas, porque compara cada registro con muchos otros y además revisa si ya guardó a los clientes repetidos. Al pasar de **1.000 a 100.000 ventas**, las comparaciones aumentaron aproximadamente **10.010 veces**, y con 100.000 ventas el reporte tardó casi **42 segundos**.
+
+Como solución, propongo evitar comparar todas las ventas entre sí. Podemos recorrerlas una sola vez y utilizar conjuntos `Set` para recordar los clientes vistos e identificar a los que compraron más de una vez; esto permitiría un crecimiento **O(n) en promedio** y haría el reporte más rápido.
