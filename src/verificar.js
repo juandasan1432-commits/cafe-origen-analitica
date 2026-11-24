@@ -22,3 +22,5 @@ if(funcionesAnalitica.ventasPorCiudad(ventas, "medellIN") === funcionesAnalitica
 
 //console.log(funcionesAnalitica.ventaMayor(ventas))
 
+console.log(funcionesAnalitica.clientesRecurrentes(ventas))
+

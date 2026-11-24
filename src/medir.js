@@ -104,3 +104,11 @@ const resultados = orquestador(cantidadVentas);
     // imprimo el arreglo filas en forma de tabla para comparar las operaciones de cada funcion
     console.table(filas);
 
+
+
+    //medidor de tiempo de ejuccion
+    const tiempoEjucion = generador.generarVentas(100000)
+
+    console.time("tiempo ejecucion")
+    funcionesAnalitica.clientesRecurrentes(tiempoEjucion)
+    console.timeEnd("tiempo ejecucion")

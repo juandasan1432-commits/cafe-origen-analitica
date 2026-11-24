@@ -262,4 +262,22 @@ function valoresCiudadFormateado (ventas) {
     return primera
     }
 
-module.exports = {valorVenta, totalVendido, unidadesVendidas, ventaMayor, ticketPromedio, ventasPorCiudad, normalizar,totalVendidoM, unidadesVendidasM, ventasPorCiudadM, totalPorCiudad, unidadesPorProducto, topProductosPorValor, valoresCiudadFormateado, valoresProductosFormateados, ventasDelDia, ventaMayorInstrumentalizada, totalVentasPorCiudadInstrumentalizada, totalVendidoInstrumentado,primeraVenta}
+    //funcion que calcula los clientes recurrentes
+    function clientesRecurrentes(ventas) {
+    const recurrentes = [];
+
+    for (let i = 0; i < ventas.length; i++) {
+        for (let j = i + 1; j < ventas.length; j++) {
+            if (
+                ventas[i].cliente === ventas[j].cliente &&
+                !recurrentes.includes(ventas[i].cliente)
+            ) {
+                recurrentes.push(ventas[i].cliente);
+            }
+        }
+    }
+
+    return recurrentes;
+}
+
+module.exports = {valorVenta, totalVendido, unidadesVendidas, ventaMayor, ticketPromedio, ventasPorCiudad, normalizar,totalVendidoM, unidadesVendidasM, ventasPorCiudadM, totalPorCiudad, unidadesPorProducto, topProductosPorValor, valoresCiudadFormateado, valoresProductosFormateados, ventasDelDia, ventaMayorInstrumentalizada, totalVentasPorCiudadInstrumentalizada, totalVendidoInstrumentado,primeraVenta, clientesRecurrentes}
