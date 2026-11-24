@@ -20,6 +20,21 @@ function totalVendido (ventas) {
     return total
 }
 
+//total vendido instrumentalizada
+function totalVendidoInstrumentado (ventas,contador){
+    let total = 0;
+    for( const venta of ventas) {
+        //cada vez que de una vuelta suma uno al contador
+        contador.visitas++
+        total += venta.cantidad * venta.precio
+    }
+    return total    
+}
+
+//const resultado = totalVendidoInstrumentado(ventas,contador)
+//console.log(resultado, contador)
+
+
 //calcula las unidades vendidas
 function unidadesVendidas (ventas){
     let vendidas = 0;
@@ -31,17 +46,38 @@ function unidadesVendidas (ventas){
 
 //calcula la venta mayor
 function ventaMayor (ventas){
-    let costosa = 0
-    let Posicion = null
+    let valor = 0
+    let posicion = null
 
     for (const venta of ventas){
-        if (costosa === 0 || valorVenta(venta) > (costosa)){
-            costosa = valorVenta(venta)
-            Posicion = venta
+
+        if (valor === 0 || valorVenta(venta) > (valor)){
+            valor = valorVenta(venta)
+            posicion = venta
         }
     }
-    return {costosa,Posicion}
+    return {valor,posicion}
 }
+
+//La venta mayor pero instrumentalizada
+function ventaMayorInstrumentalizada (ventas, contador){
+    let valor = 0;
+    let posicion = null
+
+    for(const venta of ventas){
+        contador.visitas++
+
+        if(valor === 0 || valorVenta(venta) > (valor)){
+            valor = valorVenta(venta)
+            posicion = venta
+        }
+        contador.comparaciones++
+    }
+    return {valor,posicion}
+
+}
+//const resultado = ventaMayorInstrumentalizada(ventas,contador)
+//console.log(resultado,contador);
 
 //calcula el ticket promedio
 function ticketPromedio(ventas){
@@ -112,6 +148,7 @@ function totalPorCiudad (ventas){
     
     const totales = ventas.reduce((acumulador,venta) => {
         const ciudades = normalizar(venta.ciudad)
+
         if( acumulador[ciudades] === undefined){
             acumulador[ciudades] = 0
         }
@@ -120,6 +157,25 @@ function totalPorCiudad (ventas){
     }, {})
     return totales
 }
+
+//totalVentasPorCiudadInstrumentalizada
+function totalVentasPorCiudadInstrumentalizada(ventas,contador){
+    const totales = ventas.reduce((acumulador,venta) =>{
+        const ciudades = normalizar(venta.ciudad)
+        contador.visitas++
+        if (acumulador[ciudades] === undefined){
+            acumulador[ciudades] = 0
+        }
+        contador.comparaciones++
+        acumulador[ciudades] += valorVenta(venta)
+        return acumulador
+    } 
+    ,{})
+    return totales
+}
+//const resultado = totalVentasPorCiudadInstrumentalizada(ventas,contador)
+//console.log(resultado,contador);
+
 
 //unidadesPorProducto
 function unidadesPorProducto (ventas){
@@ -199,8 +255,11 @@ function valoresCiudadFormateado (ventas) {
         return fechasIguales
     }
 
+    //primeraVenta funcion de complejidad costante
+    function primeraVenta (ventas, contador){
+    const primera = ventas[0]
+    contador.visitas++
+    return primera
+    }
 
-
-    
-
-module.exports = {valorVenta, totalVendido, unidadesVendidas, ventaMayor, ticketPromedio, ventasPorCiudad, normalizar,totalVendidoM, unidadesVendidasM, ventasPorCiudadM, totalPorCiudad, unidadesPorProducto, topProductosPorValor, valoresCiudadFormateado, valoresProductosFormateados, ventasDelDia}
+module.exports = {valorVenta, totalVendido, unidadesVendidas, ventaMayor, ticketPromedio, ventasPorCiudad, normalizar,totalVendidoM, unidadesVendidasM, ventasPorCiudadM, totalPorCiudad, unidadesPorProducto, topProductosPorValor, valoresCiudadFormateado, valoresProductosFormateados, ventasDelDia, ventaMayorInstrumentalizada, totalVentasPorCiudadInstrumentalizada, totalVendidoInstrumentado,primeraVenta}

@@ -1,29 +1,29 @@
 const {ventas} = require("./datos")
 const functionesAnalitica = require("./analitica")
 
-//resumen general
+// ------------------------------------------ RESUMEN GENERAL --------------------------------------------
 console.log(" RESUMEN GENERAL ")
 console.log(" Total vendido: $",functionesAnalitica.totalVendidoM(ventas).toLocaleString("es-CO"))
 console.log(" Total unidades vendidas:",functionesAnalitica.unidadesVendidasM(ventas));
 console.log(" ");
 
-//ventasPorCiudad
+//-------- ventasPorCiudad -------------
 console.log(" VENTAS POR CIUDAD")
 console.table(functionesAnalitica.valoresCiudadFormateado(ventas))
 console.log(" ")
-
-//unidadesPorProducto
+ 
+// -------- unidadesPorProducto ---------
 console.log(" UNIDADES POR PRODUCTO");
 console.table(functionesAnalitica.unidadesPorProducto(ventas))
 console.log(" ")
 
-//topProductosPorValor
+// ------- topProductosPorValor ---------
 console.log(" TOP 3 PRODUCTOS POR VALOR ");
 console.table(functionesAnalitica.valoresProductosFormateados(ventas, 3))
 console.log("");
 
 
-//ventasDelDia
+//------------------------------------ ventasDelDia -------------------------------------------------
 console.log(" VENTAS DEL DIA ");
 const ventaDia = functionesAnalitica.ventasDelDia(ventas,"2026-09-03")
 console.log(ventaDia);
@@ -38,7 +38,7 @@ console.log(" Total vendido en esta fecha fue:", functionesAnalitica.totalVendid
 console.log(" Total de unidades vendidas en esta fecha fue:", functionesAnalitica.unidadesVendidasM(diaSinVenta));
 console.log(" ");
 
-//  Errores reportados
+// ---------------------------------  Errores reportados --------------------------------------
 //ERROR 1, Bogota aparecia dos veces
 const ciudadesPruebas = {
     Bogotá : 10000,

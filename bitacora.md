@@ -415,3 +415,49 @@ Conclusión: la validación evita dividir entre cero y permite consultar días s
 - Error 1: reproducido y comprobada la corrección mediante normalizar().
 - Error 2: reproducido y comprobada la corrección mediante ticketPromedio().
 - Las pruebas demostraron que nuestra implementación evita ambos problemas reportados por la gerente.
+
+## Día 2 — MiniReto 5: 
+
+### 1. Generador de ventas
+
+Creamos la función `generarVentas(n)` para generar la cantidad de ventas que necesitemos. Utilizamos `Math.random()` y `Math.floor()` para seleccionar productos, ciudades, cantidades y clientes aleatorios.
+
+También implemente fechas aleatorias del año 2026 utilizando `Date`.
+
+Utilice un ciclo `for` para crear las ventas, `push()` para guardarlas en un arreglo y `return` para devolverlas.
+
+### 2. Funciones instrumentadas
+
+Cree tres versiones instrumentadas de nuestras funciones originales:
+
+- `totalVendidoInstrumentado`
+- `ventaMayorInstrumentalizada`
+- `totalVentasPorCiudadInstrumentalizada`
+
+Agrege un objeto contador para registrar cuántas ventas revisa cada función y cuántas condiciones evalúa.
+
+Aprendi que podemos pasar el contador como argumento y modificar sus propiedades dentro de la función, sin necesidad de devolverlo con `return`.
+
+Probe las funciones con las 12 ventas originales y comprobamos que los resultados eran correctos.
+
+### 3. Predicciones antes de medir
+
+Antes de ejecutar las pruebas, analizamos cómo creemos que crecerán las operaciones cuando aumentemos las ventas.
+
+| Cantidad de ventas | Total vendido | Venta mayor | Total por ciudad |
+|---|---:|---:|---:|
+| 100 | 100 | 200 | 200 |
+| 1.000 | 1.000 | 2.000 | 2.000 |
+| 10.000 | 10.000 | 20.000 | 20.000 |
+| 100.000 | 100.000 | 200.000 | 200.000 |
+
+Los números representan las operaciones que esperamos contar, sumando visitas y evaluaciones registradas.
+
+### 4. Complejidad algorítmica
+
+Mi predicción es que las tres funciones tienen complejidad **O(n)**, porque recorren las ventas una sola vez.
+
+Aprendi que O(n) significa crecimiento lineal: si multiplicamos las ventas por 10, las operaciones también aumentan aproximadamente 10 veces.
+
+Al principio pensé que utilizar un acumulador podía hacer que una función fuera O(n²), pero entendí que acumular valores no significa recorrer nuevamente los datos.
+

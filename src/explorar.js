@@ -108,11 +108,16 @@
 
     //funcion topProductosPorValor
 
+    //copiamos mi arreglo original y mostramos la lista de los id
     const copiaVentas = [...ventas]
     const idsAntes = copiaVentas.map((venta) => venta.id)
     console.log(idsAntes);
     console.log("_----------------------------------_");
+
+    //mostramos los 3 productos mas vendidos de mayor a menor
     console.log(FuncionesAnalitica.topProductosPorValor(ventas, 3))
+
+    //muestra la lista de los id despues de sacar los 3 productos mas vendidos, para ver si cambia 
     console.log("_---------------------------------_");
     const idsDespues = ventas.map((venta) => venta.id)
     console.log(idsDespues);
