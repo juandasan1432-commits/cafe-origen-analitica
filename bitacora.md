@@ -365,3 +365,10 @@ Decidí conservar **`totalCiudadUnaPasada()`** para el motor porque las dos vers
 
  La versión encadenada también es buena opcion, un poco **"mas facil"**, pero crea tres arreglos encadenados (uno depende del otro), y eso consume mucha mas memoria; por eso prefiero `totalCiudadUnaPasada` porque el servidor tiene recursos limitados y esta no me crea ni un solo arreglo.
   Conservé ambas funciones para documentar y comprobar la comparación.
+
+
+### Revision de compañero (santiago arboleda)
+
+**Buen informe**, con informacion clara y opurtuna, me queda claro que es el proyecto, como se ejecuta y como se esta mejorando el rendimiento de complejidad temporal y espacial.
+
+Recomendacion : puedes probar escribiendo el codigo en ingles, para mejorar y acostumbrarse al lenguaje 

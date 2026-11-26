@@ -1,6 +1,7 @@
 const {ventas} = require("./datos")
 const funcionesAnalitica = require("./analitica")
 const generador = require("./generador")
+const funcionesInstrumentadas = require("./instrumentadas")
 
 //creo la funcion fabrica (molde -- referencia de como se van a crear todos mis contadores)
 const crearContador = () => ({
@@ -27,15 +28,15 @@ const crearContador = () => ({
         const contadorVenta1 = crearContador()
 
         //guardo en totalVentas el resultado de la funcion totalVendido, el resultado es solo el return (total) y el otro plus es que por cada vuelta me aumenta mi contador
-       const totalVentas =  funcionesAnalitica.totalVendidoInstrumentado(ventasGeneradas, contadorTotal)
+       const totalVentas =  funcionesInstrumentadas.totalVendidoInstrumentalizado(ventasGeneradas, contadorTotal)
 
        //guardo en mayorVenta el resultado de la funcion ventaMayor, el resultado es solo el return (valor) y su posicion que seria como todo la venta ( todo el objeto)
        // el otro plus es que por cada vuelta me sube +1 el contador de visitas y si tiene una comparacion cualquiera tambien sube +1 el de comparaciones
-       const mayorVenta = funcionesAnalitica.ventaMayorInstrumentalizada(ventasGeneradas, contadorMayor)
+       const mayorVenta = funcionesInstrumentadas.ventaMayorInstrumentalizada(ventasGeneradas, contadorMayor)
 
        //guardo en totalCiudad el resultado de la funcion totalVentasPorCiudad, el resultado es solo el return (totales) que es un objeto con todas las ciudades y sus ventas totales
        // el otro plus es que por cada vuelta me sube +1 el contador de visitas y si tiene una comparacion cualquiera tambien sube +1 el de comparaciones
-       const totalCiudad = funcionesAnalitica.totalVentasPorCiudadInstrumentalizada(ventasGeneradas, contadorCiudad)
+       const totalCiudad = funcionesInstrumentadas.totalVentasPorCiudadInstrumentalizada(ventasGeneradas, contadorCiudad)
 
        //guardo en primaVen el resultado de la funcion primeraVenta, el resultado es solo el return (primera, o sea la venta numero 1) y como solo necesita dar una vuelta el contador solo aumenta a 1
        const primeraVen = funcionesAnalitica.primeraVenta(ventasGeneradas, contadorVenta1)
