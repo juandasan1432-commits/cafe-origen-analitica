@@ -217,8 +217,6 @@ Aprendí a generar datos, medir operaciones y distinguir **O(1)** de **O(n)**.
 
 ---
 
----
-
 ## MiniReto 6 — Clientes recurrentes
 
 ### Prueba con las 12 ventas
@@ -283,3 +281,87 @@ Aunque las comparaciones de los dos `for` son **O(n²)**, si `includes()` debe b
 Comprobé que el reporte tarda mucho más cuando aumenta la cantidad de ventas, porque compara cada registro con muchos otros y además revisa si ya guardó a los clientes repetidos. Al pasar de **1.000 a 100.000 ventas**, las comparaciones aumentaron aproximadamente **10.010 veces**, y con 100.000 ventas el reporte tardó casi **42 segundos**.
 
 Como solución, propongo evitar comparar todas las ventas entre sí. Podemos recorrerlas una sola vez y utilizar conjuntos `Set` para recordar los clientes vistos e identificar a los que compraron más de una vez; esto permitiría un crecimiento **O(n) en promedio** y haría el reporte más rápido.
+
+---
+
+## MiniReto 7 — Memoria de los reportes
+
+### Objetivo y funciones
+
+En este reto comparé **dos maneras de calcular el total vendido en una ciudad**. Quería comprobar si ambas entregaban el mismo resultado y cuál necesitaba menos memoria adicional.
+
+- **`totalCiudadCadena(ventas, ciudad)`:** utilicé `map → filter → map → reduce` para normalizar ciudades, seleccionar las ventas que coinciden, calcular el valor de cada venta y sumar el dinero.
+- **`totalCiudadUnaPasada(ventas, ciudad)`:** utilicé un solo `for...of`, comparé las ciudades normalizadas y sumé las ventas que coincidían en un acumulador. No creé arreglos intermedios.
+
+**Prueba realizada:** generé **10.000 ventas** con `generarVentas(10000)` y pasé el **mismo arreglo** y la ciudad **Medellín** a ambas funciones. Las dos devolvieron **493.948.000**. Por eso comprobé que obtienen el mismo resultado sin modificar las ventas originales.
+
+### Recorridos y arreglos nuevos
+
+Para entender la tabla, utilicé estas letras:
+
+- **`n`:** cantidad **total de ventas** recibidas por la función; en nuestra prueba, `n = 10.000`.
+- **`m`:** cantidad de ventas que **coinciden con la ciudad buscada** después de aplicar `filter()`. **No significa `map`**. Siempre se cumple `m ≤ n`.
+
+En `totalCiudadCadena()` ocurre lo siguiente, en este orden:
+
+| Paso | Método | ¿Qué reviso? | ¿Qué obtengo? | ¿Crea arreglo nuevo? |
+|---|---|---|---|---|
+| 1 | Primer `map()` | Las **n** ventas | **n** objetos con la ciudad normalizada | Sí, de n elementos |
+| 2 | `filter()` | Las **n** ventas normalizadas | Las **m** ventas de la ciudad buscada | Sí, de m elementos |
+| 3 | Segundo `map()` | Solo las **m** ventas filtradas | **m** números (`cantidad × precio`) | Sí, de m elementos |
+| 4 | `reduce()` | Los **m** números anteriores | **Un único total** acumulado | No |
+
+**Conclusión de los recorridos:** llamo cuatro métodos, pero **solo los primeros dos revisan las n ventas completas**. Los otros dos recorren únicamente las m ventas filtradas. Por lo tanto, cuento `n + n + m + m = 2n + 2m` visitas a elementos. También se crean **3 arreglos nuevos**.
+
+**Ejemplo para entender las letras (no es otra medición):** si recibo 10.000 ventas (`n`) y solo 2.000 son de Medellín (`m`), los recorridos revisan 10.000, 10.000, 2.000 y 2.000 elementos, respectivamente. En total son **24.000 visitas a elementos**. La comparación de ciudad se realiza en `filter()`; el segundo `map()` **ya no compara ciudades**, sino que calcula el dinero de las ventas seleccionadas.
+
+En `totalCiudadUnaPasada()` hago **un recorrido de n ventas con `for...of`**, verifico la ciudad dentro del mismo ciclo y actualizo un acumulador numérico. **No creo arreglos nuevos**.
+
+### Complejidad temporal y espacial
+
+| Función | Tiempo | Memoria adicional | Explicación |
+|---|---|---|---|
+| `totalCiudadCadena()` | **O(n)** | **O(n)** | Hace varios recorridos y crea tres arreglos intermedios. |
+| `totalCiudadUnaPasada()` | **O(n)** | **O(1)** | Recorre las ventas una vez y solo utiliza variables y un acumulador. |
+
+**¿Por qué las dos son O(n) en tiempo?** En el peor caso, todas las ventas coinciden con la ciudad, así que `m = n`. La cadena recorre `2n + 2m = 4n` elementos. En Big O eliminamos la constante 4 y queda **O(4n) = O(n)**. La versión de una pasada también es O(n), porque visita cada venta una vez. **Hacer cuatro recorridos seguidos no equivale a tener cuatro ciclos anidados.**
+
+**¿Por qué cambia la memoria?** La cadena crea un arreglo de n elementos y otros dos de hasta m elementos; el primer `map()` también crea objetos normalizados. Esa memoria puede crecer con las ventas: **O(n)**. En cambio, la versión de una pasada conserva únicamente unas cuantas variables y un número acumulado: **O(1)** de memoria adicional. Esta comparación no incluye el arreglo de ventas recibido, porque ya existía antes de llamar a las funciones.
+
+### Memoria de las funciones del motor
+
+Clasifiqué la **memoria adicional** de las funciones, no cuánto tardan. Aquí `n` representa las ventas; `c`, las **ciudades distintas**; y `p`, los **productos distintos**.
+
+**Funciones con espacio O(1)** (memoria adicional constante):
+
+| Función | ¿Por qué? |
+|---|---|
+| `valorVenta()` | Multiplico cantidad por precio y devuelvo un número. |
+| `totalVendido()`, `unidadesVendidas()`, `totalVendidoM()`, `unidadesVendidasM()` | Sumo valores con un acumulador numérico. |
+| `ventaMayor()` | Guardo el valor mayor y una referencia a su venta. |
+| `ticketPromedio()` | Utilizo un total y un contador. |
+| `ventasPorCiudad()`, `totalCiudadUnaPasada()` | Comparo ciudades y acumulo dinero, sin crear arreglos. |
+| `primeraVenta()` | Consulto directamente `ventas[0]`. |
+| `totalPorCiudad()` (ciudades fijas) | **O(1)**: si solo se permiten cuatro ciudades, el objeto acumulador tendrá como máximo cuatro propiedades, aunque aumenten las ventas. |
+
+**Funciones cuyo espacio puede crecer:**
+
+| Función | Espacio | ¿Por qué? |
+|---|---|---|
+| `ventasPorCiudadM()`, `ventasDelDia()` | **O(n)** | `filter()` crea otro arreglo que, en el peor caso, contiene todas las ventas. |
+| `totalCiudadCadena()` | **O(n)** | Los dos `map()` y `filter()` crean tres arreglos. |
+| `clientesRecurrentes()` | **O(n)** | El arreglo `recurrentes` puede guardar muchos clientes distintos. |
+| `totalPorCiudad()` (ciudades no fijas) | **O(c)**, hasta **O(n)** | Si se permiten nuevas ciudades, el objeto añade una propiedad por cada ciudad diferente (`c`). En el peor caso, podría haber una ciudad distinta por venta (`c = n`). |
+| `unidadesPorProducto()` | **O(p)**, hasta **O(n)** | El objeto agrega una propiedad por producto distinto. |
+| `topProductosPorValor()` | **O(p)**, hasta **O(n)** | Agrupo productos en un objeto; `Object.entries()` y `slice()` también crean arreglos. |
+
+**Aclaración:** incluí `totalPorCiudad()` en ambas tablas porque son **dos escenarios** diferentes.
+ Escenario 1: con ciudades fijas su memoria adicional es **O(1)**.
+ Escenario 2: si se permiten ciudades nuevas es **O(c)** y puede llegar a **O(n)** en el peor caso.
+
+### Decisión final
+
+Decidí conservar **`totalCiudadUnaPasada()`** para el motor porque las dos versiones tardan O(n), pero esta utiliza **O(1) de memoria adicional**. Con un solo `for...of` reviso las ventas, compruebo la ciudad, sumo las que coinciden y devuelvo el acumulador.
+
+ La versión encadenada también es buena opcion, un poco **"mas facil"**, pero crea tres arreglos encadenados (uno depende del otro), y eso consume mucha mas memoria; por eso prefiero `totalCiudadUnaPasada` porque el servidor tiene recursos limitados y esta no me crea ni un solo arreglo.
+  Conservé ambas funciones para documentar y comprobar la comparación.
