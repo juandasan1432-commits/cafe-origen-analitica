@@ -107,7 +107,7 @@ const resultados = orquestador(cantidadVentas);
 
 
     //medidor de tiempo de ejuccion
-    const tiempoEjucion = generador.generarVentas(100000)
+    const tiempoEjucion = generador.generarVentas(1000)
 
     console.time("tiempo ejecucion")
     funcionesAnalitica.clientesRecurrentes(tiempoEjucion)

@@ -210,6 +210,9 @@ function topProductosPorValor (ventas, k){
     ordenarProductos.sort((a,b) => {
         return b[1] - a[1]
     })
+
+    //se mostrara en pantalla el ranking de los productos que el cliente escoja
+    //(ventas,3) se mostrara el top 3 de productos
    const productosOrdenados = ordenarProductos.slice(0,k)
     return productosOrdenados
     
@@ -280,4 +283,48 @@ function valoresCiudadFormateado (ventas) {
     return recurrentes;
 }
 
-module.exports = {valorVenta, totalVendido, unidadesVendidas, ventaMayor, ticketPromedio, ventasPorCiudad, normalizar,totalVendidoM, unidadesVendidasM, ventasPorCiudadM, totalPorCiudad, unidadesPorProducto, topProductosPorValor, valoresCiudadFormateado, valoresProductosFormateados, ventasDelDia, ventaMayorInstrumentalizada, totalVentasPorCiudadInstrumentalizada, totalVendidoInstrumentado,primeraVenta, clientesRecurrentes}
+
+//funcion totalCiudadCadena 
+function totalCiudadCadena (ventas,ciudad){
+    const ciudadBuscadaNorm = normalizar(ciudad)
+    const ciudadesArreglo = ventas.map((venta) => {
+        const ciudadesNormalizadas = normalizar(venta.ciudad)
+        return {
+            ...venta,
+            ciudad : ciudadesNormalizadas
+        }
+    })
+    const ciudadFiltrada = ciudadesArreglo.filter((venta) =>{
+        return venta.ciudad === ciudadBuscadaNorm
+    })
+    
+    const valorDeVenta = ciudadFiltrada.map((venta) => {
+        return valorVenta(venta)
+    })
+    
+    const totalVentas = valorDeVenta.reduce((acumulador,venta) =>{
+        return acumulador += venta
+    },0)
+    return totalVentas
+}
+//console.log("medellin:", totalCiudadCadena(ventas,"medellin"));
+
+//totalCiudadPorUnaPasada
+function totalCiudadUnaPasada(ventas, ciudad){
+    let acumulador = 0
+    const ciudadNormalizada = normalizar(ciudad)
+    for (const venta of ventas) {
+        const ciudadNorm = normalizar(venta.ciudad)
+        if(ciudadNorm === ciudadNormalizada){
+            const ventaValor = valorVenta(venta)
+            acumulador += ventaValor
+        }
+    }
+    return acumulador
+
+}
+//console.log("medellin", totalCiudadUnaPasada(ventas,"medellin"));
+
+ 
+
+module.exports = {valorVenta, totalVendido, unidadesVendidas, ventaMayor, ticketPromedio, ventasPorCiudad, normalizar,totalVendidoM, unidadesVendidasM, ventasPorCiudadM, totalPorCiudad, unidadesPorProducto, topProductosPorValor, valoresCiudadFormateado, valoresProductosFormateados, ventasDelDia, ventaMayorInstrumentalizada, totalVentasPorCiudadInstrumentalizada, totalVendidoInstrumentado,primeraVenta, clientesRecurrentes, totalCiudadCadena, totalCiudadUnaPasada}
